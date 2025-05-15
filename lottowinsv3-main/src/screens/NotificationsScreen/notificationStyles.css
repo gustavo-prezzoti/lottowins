@@ -1,0 +1,78 @@
+/* Notification Screen Custom Dark Theme Styles */
+
+/* Override card styles for notification screen */
+.notification-screen .bg-card {
+  background-color: #1A1D23 !important;
+  border: 1px solid #2A2F38 !important;
+}
+
+.notification-screen .bg-card-light {
+  background-color: #181b20 !important;
+  border: 1px solid #2A2F38 !important;
+}
+
+.notification-screen .bg-white {
+  background-color: #1A1D23 !important;
+  border-color: #2A2F38 !important;
+}
+
+/* Ensure text is visible on dark background */
+.notification-screen .text-text-dark {
+  color: #e0e0e0 !important;
+}
+
+.notification-screen .text-text {
+  color: #ffffff !important;
+}
+
+.notification-screen .text-text-muted {
+  color: #a0a0a0 !important;
+}
+
+/* Style for notification item cards */
+.notification-screen .notification-item {
+  background-color: #1A1D23 !important;
+  border-color: #2A2F38 !important;
+}
+
+/* Unread notification styling */
+.notification-screen .unread-notification {
+  border-color: rgba(228, 0, 43, 0.3) !important;
+  box-shadow: 0 0 10px rgba(228, 0, 43, 0.1) !important;
+}
+
+/* Animation for notification hover */
+.notification-screen .notification-card {
+  transition: all 0.3s ease;
+}
+
+.notification-screen .notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Pagination button styles */
+.notification-screen .pagination-button {
+  background-color: #151821 !important;
+  border-color: #2A2F38 !important;
+  color: #a0a0a0 !important;
+}
+
+.notification-screen .pagination-button:hover:not(:disabled) {
+  background-color: #1A1D23 !important;
+  border-color: rgba(228, 0, 43, 0.3) !important;
+}
+
+/* Empty state styles */
+.notification-screen .empty-state {
+  background-color: #1A1D23 !important;
+  border-color: #2A2F38 !important;
+}
+
+/* Style for text inputs and selects if needed */
+.notification-screen input,
+.notification-screen select {
+  background-color: #151821 !important;
+  border-color: #2A2F38 !important;
+  color: #f0f0f0 !important;
+} 

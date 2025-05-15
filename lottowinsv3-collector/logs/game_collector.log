@@ -1,0 +1,153 @@
+2025-05-13 16:09:14,509 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:09:33,575 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:12:13,721 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:12:13,723 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:12:13,805 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:12:13,805 - postgres_database - INFO - Criando pool com min=5, max=30
+2025-05-13 16:12:14,191 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:12:14,192 - game_collector_job - INFO - Starting game collection job at 2025-05-13 16:12:14.192058
+2025-05-13 16:12:14,192 - game_collector_job - INFO - Collecting games for state: CO
+2025-05-13 16:12:14,192 - game_collector_job - INFO - Save to DB: True
+2025-05-13 16:12:14,192 - game_collector_job - INFO - Collecting latest games for state CO
+2025-05-13 16:12:14,192 - postgres_database - INFO - Pool de conexões fechado
+2025-05-13 16:12:14,195 - game_collector_job - ERROR - Erro ao executar job: get_pg_connection() got an unexpected keyword argument 'max_retries'
+2025-05-13 16:12:14,196 - game_collector_job - ERROR - Traceback (most recent call last):
+  File "C:\Users\gusta\Desktop\ppj\lottowinsv3-collector\jobs\game_collector_job.py", line 447, in <module>
+    main()
+  File "C:\Users\gusta\Desktop\ppj\lottowinsv3-collector\jobs\game_collector_job.py", line 411, in main
+    run_collection_job(
+  File "C:\Users\gusta\Desktop\ppj\lottowinsv3-collector\jobs\game_collector_job.py", line 248, in run_collection_job
+    state_result = GameCollectorService.collect_games_by_state(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gusta\Desktop\ppj\lottowinsv3-collector\app\services\game_collector_service.py", line 71, in collect_games_by_state
+    connection = cls._get_shared_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gusta\Desktop\ppj\lottowinsv3-collector\app\services\game_collector_service.py", line 42, in _get_shared_connection
+    cls._shared_connection = get_pg_connection(max_retries=5, retry_delay=2.0)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: get_pg_connection() got an unexpected keyword argument 'max_retries'
+
+2025-05-13 16:12:14,196 - game_collector_job - INFO - Job de coleta de jogos finalizado
+2025-05-13 16:12:54,698 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:12:54,701 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:12:54,784 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:12:54,784 - postgres_database - INFO - Criando pool com min=5, max=30
+2025-05-13 16:12:55,147 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:12:55,147 - game_collector_job - INFO - Starting game collection job at 2025-05-13 16:12:55.147659
+2025-05-13 16:12:55,148 - game_collector_job - INFO - Collecting games for state: CO
+2025-05-13 16:12:55,148 - game_collector_job - INFO - Save to DB: True
+2025-05-13 16:12:55,148 - game_collector_job - INFO - Collecting latest games for state CO
+2025-05-13 16:12:55,148 - app.services.game_collector_service - INFO - Created shared database connection for collection process
+2025-05-13 16:12:55,200 - game_collector_job - INFO - Collection completed in 0.05 seconds
+2025-05-13 16:12:55,200 - game_collector_job - INFO - Processed 1 states
+2025-05-13 16:12:55,200 - game_collector_job - INFO - Collected 0 games
+2025-05-13 16:12:55,200 - game_collector_job - WARNING - Failed to collect data for 1 states
+2025-05-13 16:12:55,200 - game_collector_job - WARNING -   CO: State with code 'CO' not found in database
+2025-05-13 16:12:55,200 - game_collector_job - INFO - Results saved to results/games_CO_20250513_161255.json
+2025-05-13 16:12:55,200 - app.services.game_collector_service - INFO - Released shared database connection
+2025-05-13 16:12:55,200 - postgres_database - INFO - Pool de conexões fechado
+2025-05-13 16:12:55,200 - game_collector_job - INFO - Job de coleta de jogos finalizado
+2025-05-13 16:13:12,039 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:13:12,041 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:13:12,099 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:13:12,099 - postgres_database - INFO - Criando pool com min=5, max=30
+2025-05-13 16:13:12,395 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:13:12,395 - game_collector_job - INFO - No date specified, using today (2025-05-13) as start date for week collection
+2025-05-13 16:13:12,395 - game_collector_job - INFO - Starting game collection job at 2025-05-13 16:13:12.395522
+2025-05-13 16:13:12,395 - game_collector_job - INFO - Collecting games for all states
+2025-05-13 16:13:12,395 - game_collector_job - INFO - Collecting games for 7 days, starting from 2025-05-13
+2025-05-13 16:13:12,395 - game_collector_job - INFO - Save to DB: True
+2025-05-13 16:13:12,395 - game_collector_job - INFO - Collecting all states for multiple dates
+2025-05-13 16:13:12,430 - game_collector_job - INFO - Will process 7 dates: 2025-05-13, 2025-05-12, 2025-05-11, 2025-05-10, 2025-05-09, 2025-05-08, 2025-05-07
+2025-05-13 16:13:12,430 - game_collector_job - INFO - Processing 53 states in batches of 5
+2025-05-13 16:13:12,430 - game_collector_job - INFO - Processing batch of states 1-5 of 53
+2025-05-13 16:13:12,430 - game_collector_job - INFO - Collecting games for state al on date 2025-05-13
+2025-05-13 16:13:12,430 - app.services.game_collector_service - INFO - Created shared database connection for collection process
+2025-05-13 16:13:13,323 - game_collector_job - INFO - Collecting games for state al on date 2025-05-12
+2025-05-13 16:13:14,193 - game_collector_job - INFO - Collecting games for state al on date 2025-05-11
+2025-05-13 16:13:15,072 - game_collector_job - INFO - Collecting games for state al on date 2025-05-10
+2025-05-13 16:13:15,928 - game_collector_job - INFO - Collecting games for state al on date 2025-05-09
+2025-05-13 16:13:16,805 - game_collector_job - INFO - Collecting games for state al on date 2025-05-08
+2025-05-13 16:13:17,684 - game_collector_job - INFO - Collecting games for state al on date 2025-05-07
+2025-05-13 16:13:18,692 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-13
+2025-05-13 16:13:19,544 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-12
+2025-05-13 16:13:20,448 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-11
+2025-05-13 16:13:21,285 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-10
+2025-05-13 16:13:22,195 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-09
+2025-05-13 16:13:23,137 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-08
+2025-05-13 16:16:17,559 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:16:17,559 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:16:17,624 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:16:17,625 - postgres_database - INFO - Criando pool com min=5, max=30
+2025-05-13 16:16:17,938 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:16:17,938 - game_collector_job - INFO - No date specified, using today (2025-05-13) as start date for week collection
+2025-05-13 16:16:17,938 - game_collector_job - INFO - Starting game collection job at 2025-05-13 16:16:17.938620
+2025-05-13 16:16:17,938 - game_collector_job - INFO - Collecting games for all states
+2025-05-13 16:16:17,954 - game_collector_job - INFO - Collecting games for 7 days, starting from 2025-05-13
+2025-05-13 16:16:17,954 - game_collector_job - INFO - Save to DB: True
+2025-05-13 16:16:17,954 - game_collector_job - INFO - Collecting all states for multiple dates
+2025-05-13 16:16:17,986 - game_collector_job - INFO - Will process 7 dates: 2025-05-13, 2025-05-12, 2025-05-11, 2025-05-10, 2025-05-09, 2025-05-08, 2025-05-07
+2025-05-13 16:16:17,986 - app.services.game_collector_service - INFO - Começando coleta em lote - mantendo conexão compartilhada
+2025-05-13 16:16:17,986 - game_collector_job - INFO - Iniciando modo de coleta em lote com conexão compartilhada
+2025-05-13 16:16:17,986 - game_collector_job - INFO - Processing 53 states in batches of 5
+2025-05-13 16:16:17,986 - game_collector_job - INFO - Processing batch of states 1-5 of 53
+2025-05-13 16:16:17,986 - game_collector_job - INFO - Collecting games for state al on date 2025-05-13
+2025-05-13 16:16:17,986 - app.services.game_collector_service - INFO - Created shared database connection for collection process
+2025-05-13 16:16:18,791 - game_collector_job - INFO - Collecting games for state al on date 2025-05-12
+2025-05-13 16:16:19,589 - game_collector_job - INFO - Collecting games for state al on date 2025-05-11
+2025-05-13 16:16:20,392 - game_collector_job - INFO - Collecting games for state al on date 2025-05-10
+2025-05-13 16:16:21,213 - game_collector_job - INFO - Collecting games for state al on date 2025-05-09
+2025-05-13 16:16:22,074 - game_collector_job - INFO - Collecting games for state al on date 2025-05-08
+2025-05-13 16:16:22,990 - game_collector_job - INFO - Collecting games for state al on date 2025-05-07
+2025-05-13 16:16:23,947 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-13
+2025-05-13 16:16:24,830 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-12
+2025-05-13 16:16:25,752 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-11
+2025-05-13 16:16:26,667 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-10
+2025-05-13 16:16:27,583 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-09
+2025-05-13 16:16:28,441 - game_collector_job - INFO - Collecting games for state ak on date 2025-05-08
+2025-05-13 16:16:56,765 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:16:56,765 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:16:56,835 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:16:56,835 - postgres_database - INFO - Criando pool com min=5, max=30
+2025-05-13 16:16:57,192 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:16:57,192 - game_collector_job - INFO - Starting game collection job at 2025-05-13 16:16:57.192239
+2025-05-13 16:16:57,192 - game_collector_job - INFO - Collecting games for state: NY
+2025-05-13 16:16:57,192 - game_collector_job - INFO - Save to DB: True
+2025-05-13 16:16:57,192 - game_collector_job - INFO - Collecting latest games for state NY
+2025-05-13 16:16:57,192 - app.services.game_collector_service - INFO - Created shared database connection for collection process
+2025-05-13 16:16:57,222 - game_collector_job - INFO - Collection completed in 0.03 seconds
+2025-05-13 16:16:57,222 - game_collector_job - INFO - Processed 1 states
+2025-05-13 16:16:57,222 - game_collector_job - INFO - Collected 0 games
+2025-05-13 16:16:57,222 - game_collector_job - WARNING - Failed to collect data for 1 states
+2025-05-13 16:16:57,222 - game_collector_job - WARNING -   NY: State with code 'NY' not found in database
+2025-05-13 16:16:57,222 - app.services.game_collector_service - INFO - Released shared database connection
+2025-05-13 16:16:57,222 - postgres_database - INFO - Pool de conexões fechado
+2025-05-13 16:16:57,222 - game_collector_job - INFO - Job de coleta de jogos finalizado
+2025-05-13 16:17:05,144 - game_collector_job - INFO - Job de coleta de jogos inicializando
+2025-05-13 16:17:05,147 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:17:05,225 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:17:05,225 - postgres_database - INFO - Criando pool com min=5, max=30
+2025-05-13 16:17:05,554 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:17:05,554 - game_collector_job - INFO - No date specified, using today (2025-05-13) as start date for week collection
+2025-05-13 16:17:05,554 - game_collector_job - INFO - Starting game collection job at 2025-05-13 16:17:05.554595
+2025-05-13 16:17:05,555 - game_collector_job - INFO - Collecting games for state: NY
+2025-05-13 16:17:05,555 - game_collector_job - INFO - Collecting games for 7 days, starting from 2025-05-13
+2025-05-13 16:17:05,555 - game_collector_job - INFO - Save to DB: True
+2025-05-13 16:17:05,555 - game_collector_job - INFO - Will process 7 dates: 2025-05-13, 2025-05-12, 2025-05-11, 2025-05-10, 2025-05-09, 2025-05-08, 2025-05-07
+2025-05-13 16:17:05,555 - app.services.game_collector_service - INFO - Começando coleta em lote - mantendo conexão compartilhada
+2025-05-13 16:17:05,555 - game_collector_job - INFO - Iniciando modo de coleta em lote com conexão compartilhada
+2025-05-13 16:17:05,555 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-13
+2025-05-13 16:17:05,555 - app.services.game_collector_service - INFO - Created shared database connection for collection process
+2025-05-13 16:17:05,596 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-12
+2025-05-13 16:17:05,627 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-11
+2025-05-13 16:17:05,662 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-10
+2025-05-13 16:17:05,697 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-09
+2025-05-13 16:17:05,737 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-08
+2025-05-13 16:17:05,765 - game_collector_job - INFO - Collecting games for state NY on date 2025-05-07
+2025-05-13 16:17:05,804 - app.services.game_collector_service - INFO - Coleta em lote finalizada - conexão compartilhada liberada
+2025-05-13 16:17:05,804 - game_collector_job - INFO - Finalizando modo de coleta em lote
+2025-05-13 16:17:05,804 - game_collector_job - INFO - Collection completed in 0.25 seconds
+2025-05-13 16:17:05,804 - game_collector_job - INFO - Processed 1 states
+2025-05-13 16:17:05,804 - game_collector_job - INFO - Collected 0 games
+2025-05-13 16:17:05,804 - postgres_database - INFO - Pool de conexões fechado
+2025-05-13 16:17:05,804 - game_collector_job - INFO - Job de coleta de jogos finalizado

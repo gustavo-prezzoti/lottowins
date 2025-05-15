@@ -1,0 +1,19 @@
+2025-05-13 16:13:41,365 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:15:08,800 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:15:08,900 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:15:08,901 - postgres_database - INFO - Criando pool com min=5, max=50
+2025-05-13 16:15:09,211 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:15:09,211 - collector_job - INFO - Starting state collection job at 2025-05-13 16:15:09.211908
+2025-05-13 16:15:09,211 - collector_job - INFO - Save to DB: True, Save to memory: True
+2025-05-13 16:15:10,078 - postgres_database - INFO - Pool de conexões fechado
+2025-05-13 16:16:02,000 - postgres_database - INFO - Testando conexão direta antes de criar o pool...
+2025-05-13 16:16:02,076 - postgres_database - INFO - Conexão de teste bem-sucedida!
+2025-05-13 16:16:02,076 - postgres_database - INFO - Criando pool com min=5, max=50
+2025-05-13 16:16:02,439 - postgres_database - INFO - PostgreSQL connection pool criado com sucesso
+2025-05-13 16:16:02,439 - collector_job - INFO - Starting state collection job at 2025-05-13 16:16:02.439626
+2025-05-13 16:16:02,439 - collector_job - INFO - Save to DB: True, Save to memory: True
+2025-05-13 16:16:04,135 - collector_job - INFO - Collection completed in 1.70 seconds
+2025-05-13 16:16:04,135 - collector_job - INFO - Collected 53 states
+2025-05-13 16:16:04,135 - collector_job - INFO - Database: 0 inserted, 53 updated, 0 failed
+2025-05-13 16:16:04,135 - collector_job - INFO - Memory: 53 inserted, 0 updated, 0 unchanged
+2025-05-13 16:16:04,135 - postgres_database - INFO - Pool de conexões fechado
