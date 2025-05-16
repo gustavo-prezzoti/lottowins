@@ -32,8 +32,9 @@ ALLOWED_HOSTS = [
     'server.lottowins.online',
     'localhost',
     '127.0.0.1',
+    'www.lottowins.online',
+    'lottowins.online',
 ]
-
 
 # Application definition
 
