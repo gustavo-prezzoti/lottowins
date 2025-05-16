@@ -165,16 +165,102 @@ const USMap: React.FC<USMapProps> = ({ navigateTo = 'states' }) => {
     );
   }
 
-  // Unified map component for both mobile and desktop
-  return (
+  // Mobile version of the map com responsividade aprimorada
+  const MobileUSMap = () => (
+    <div className="relative w-full flex flex-col items-center">
+      {/* Mapa responsivo com aspect-ratio */}
+      <div className="relative w-full max-w-[480px] aspect-[4/3] flex items-center justify-center px-2 pt-2" style={{minWidth: 260}}>
+        {/* Background apenas dentro do mapa */}
+        <div className="absolute inset-0 bg-primary rounded-lg z-0"></div>
+        <div className="w-full h-full relative z-10">
+          <div className="grid grid-cols-12 grid-rows-10 gap-0.5 w-full h-full">
+            {Array.from({ length: 120 }).map((_, i) => {
+              const row = Math.floor(i / 12) + 1;
+              const col = (i % 12) + 1;
+              const stateForCell = mapStates.find(
+                state => state.gridPosition.row === row && state.gridPosition.col === col
+              );
+              if (!stateForCell) {
+                return (
+                  <div key={i} className="border border-white/10 bg-primary-light/10"></div>
+                );
+              } else {
+                return (
+                  <div 
+                    key={i} 
+                    className="relative border border-white/10"
+                    style={{ gridColumn: col, gridRow: row }}
+                  >
+                    <button
+                      className={`
+                        ${getRegionColor(stateForCell.region, hoveredState === stateForCell.abbr)}
+                        w-full h-full flex items-center justify-center text-white font-bold 
+                        text-xs sm:text-sm
+                        p-1
+                        transition-all duration-200 hover:scale-105 hover:z-50
+                        border border-white/20 shadow
+                        ${hoveredState === stateForCell.abbr ? 'z-40 ring-1 ring-white shadow-lg' : 'z-10'}`}
+                      style={{ minWidth: 22, minHeight: 22 }}
+                      onClick={() => handleStateClick(stateForCell.abbr, stateForCell.name)}
+                      onMouseEnter={() => setHoveredState(stateForCell.abbr)}
+                      onMouseLeave={() => setHoveredState(null)}
+                    >
+                      {stateForCell.abbr}
+                    </button>
+                    {/* Full state name tooltip */}
+                    <div className={`
+                      absolute opacity-0 group-hover:opacity-100 
+                      ${stateForCell.gridPosition.row === 1 ? 'top-full mt-1' : 'bottom-full mb-1'} 
+                      left-1/2 -translate-x-1/2 
+                      px-2 py-1 bg-black/90 text-white text-xs rounded 
+                      pointer-events-none whitespace-nowrap z-[200] 
+                      transition-opacity shadow-lg
+                    `}>
+                      {stateForCell.name}
+                    </div>
+                  </div>
+                );
+              }
+            })}
+          </div>
+        </div>
+      </div>
+      {/* Legenda fixa na parte inferior, sempre visível */}
+      <div className="w-full flex items-center justify-center gap-2 px-2 mt-2 mb-1 z-10">
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-blue-500/40 rounded-sm"></div>
+          <span className="text-[10px] text-white/70">NE</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-red-500/40 rounded-sm"></div>
+          <span className="text-[10px] text-white/70">SE</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-green-500/40 rounded-sm"></div>
+          <span className="text-[10px] text-white/70">MW</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-yellow-500/40 rounded-sm"></div>
+          <span className="text-[10px] text-white/70">SW</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-purple-500/40 rounded-sm"></div>
+          <span className="text-[10px] text-white/70">W</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Desktop version of the map with tooltips
+  const DesktopUSMap = () => (
     <div className="relative w-full h-full">
       {/* Background with subtle gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light/30 rounded-lg"></div>
       
       {/* Map Container */}
-      <div className="absolute inset-0 p-2 sm:p-4">
+      <div className="absolute inset-0 p-4">
         {/* Grid for the map */}
-        <div className="w-full h-full grid grid-cols-12 grid-rows-10 gap-0.5 sm:gap-1 p-1 sm:p-2">
+        <div className="w-full h-full grid grid-cols-12 grid-rows-10 gap-1 p-2">
           {/* Generate all grid cells */}
           {Array.from({ length: 120 }).map((_, i) => {
             const row = Math.floor(i / 12) + 1;
@@ -204,23 +290,22 @@ const USMap: React.FC<USMapProps> = ({ navigateTo = 'states' }) => {
                     className={`
                       ${getRegionColor(stateForCell.region, hoveredState === stateForCell.abbr)}
                       w-full h-full flex items-center justify-center text-white font-bold 
-                      text-xs sm:text-sm md:text-base lg:text-lg
+                      text-base sm:text-lg md:text-xl
                       transition-all duration-200 hover:scale-105 hover:z-50
                       border border-white/20 shadow-lg
-                      ${hoveredState === stateForCell.abbr ? 'z-40 ring-1 sm:ring-2 ring-white shadow-xl' : 'z-10'}`}
+                      ${hoveredState === stateForCell.abbr ? 'z-40 ring-2 ring-white shadow-xl' : 'z-10'}`}
                     onClick={() => handleStateClick(stateForCell.abbr, stateForCell.name)}
                     onMouseEnter={() => setHoveredState(stateForCell.abbr)}
                     onMouseLeave={() => setHoveredState(null)}
-                    style={{ minHeight: isMobile ? 22 : 32 }}
                   >
                     {stateForCell.abbr}
                   </button>
                   {/* Full state name tooltip */}
                   <div className={`
                     absolute opacity-0 group-hover:opacity-100 
-                    ${stateForCell.gridPosition.row === 1 ? 'top-full mt-1 sm:mt-2' : 'bottom-full mb-1 sm:mb-2'} 
+                    ${stateForCell.gridPosition.row === 1 ? 'top-full mt-2' : 'bottom-full mb-2'} 
                     left-1/2 -translate-x-1/2 
-                    px-2 py-1 sm:px-3 sm:py-1.5 bg-black/90 text-white text-xs sm:text-sm rounded 
+                    px-3 py-1.5 bg-black/90 text-white text-sm rounded 
                     pointer-events-none whitespace-nowrap z-[200] 
                     transition-opacity shadow-lg
                   `}>
@@ -233,31 +318,33 @@ const USMap: React.FC<USMapProps> = ({ navigateTo = 'states' }) => {
         </div>
         
         {/* Legend */}
-        <div className={`absolute ${isMobile ? 'bottom-1 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 sm:gap-2 px-2 py-1 bg-black/30 rounded-full' : 'bottom-4 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-2 sm:gap-4 px-4 py-2 bg-black/30 rounded-full'}`}>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-blue-500/40 rounded-sm"></div>
-            <span className="text-[9px] sm:text-xs text-white/70">{isMobile ? 'NE' : 'Northeast'}</span>
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-4 px-4 py-2 bg-black/30 rounded-full">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-blue-500/40 rounded-sm"></div>
+            <span className="text-xs text-white/70">Northeast</span>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-red-500/40 rounded-sm"></div>
-            <span className="text-[9px] sm:text-xs text-white/70">{isMobile ? 'SE' : 'Southeast'}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500/40 rounded-sm"></div>
+            <span className="text-xs text-white/70">Southeast</span>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-green-500/40 rounded-sm"></div>
-            <span className="text-[9px] sm:text-xs text-white/70">{isMobile ? 'MW' : 'Midwest'}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500/40 rounded-sm"></div>
+            <span className="text-xs text-white/70">Midwest</span>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-yellow-500/40 rounded-sm"></div>
-            <span className="text-[9px] sm:text-xs text-white/70">{isMobile ? 'SW' : 'Southwest'}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-500/40 rounded-sm"></div>
+            <span className="text-xs text-white/70">Southwest</span>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-purple-500/40 rounded-sm"></div>
-            <span className="text-[9px] sm:text-xs text-white/70">{isMobile ? 'W' : 'West'}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-purple-500/40 rounded-sm"></div>
+            <span className="text-xs text-white/70">West</span>
           </div>
         </div>
       </div>
     </div>
   );
+  
+  return isMobile ? <MobileUSMap /> : <DesktopUSMap />;
 };
 
 export default USMap;
