@@ -106,7 +106,7 @@ const GamesWithResults: React.FC<GamesWithResultsProps> = ({
                             <img 
                               src={game.logo_url} 
                               alt={game.name} 
-                              className="w-full h-full object-cover"
+                              className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                               onError={(e) => {
                                 e.currentTarget.style.display = 'none';
                               }}
@@ -152,7 +152,7 @@ const GamesWithResults: React.FC<GamesWithResultsProps> = ({
                           <img 
                             src={game.logo_url} 
                             alt={game.name} 
-                            className="w-full h-full object-cover"
+                            className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}

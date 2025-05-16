@@ -198,7 +198,7 @@ const DashboardScreen: React.FC = () => {
                         <img
                           src={game.logo_url}
                           alt={game.name}
-                          className="w-10 h-7 object-contain"
+                          className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                           onError={e => { e.currentTarget.style.display = 'none'; }}
                         />
                       ) : (
@@ -306,7 +306,7 @@ const DashboardScreen: React.FC = () => {
                             <img
                               src={game.logo_url}
                               alt={game.name}
-                              className="w-16 h-10 object-contain"
+                              className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                               onError={e => { e.currentTarget.style.display = 'none'; }}
                             />
                           ) : (
@@ -603,7 +603,7 @@ const DashboardScreen: React.FC = () => {
                               <img
                                 src={game.logo_url}
                                 alt={game.name}
-                                className="w-16 h-10 object-contain"
+                                className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                                 onError={e => { e.currentTarget.style.display = 'none'; }}
                               />
                             ) : (

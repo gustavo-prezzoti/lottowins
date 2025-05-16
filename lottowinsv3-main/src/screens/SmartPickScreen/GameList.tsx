@@ -190,12 +190,12 @@ const GameList: React.FC<GameListProps> = ({
                 `}
                 onClick={() => onSelect(game.slug)}
               >
-                <div className="w-12 h-12 rounded-xl bg-[#151821] flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-14 rounded-lg bg-white flex items-center justify-center overflow-hidden">
                   {game.logo_url ? (
                     <img
                       src={game.logo_url}
                       alt={game.name}
-                      className="w-8 h-8 object-contain"
+                      className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                       onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                     />
                   ) : (
