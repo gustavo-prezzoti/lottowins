@@ -1,8 +1,8 @@
-import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
 
-// baseURL mockada para produção
+// Create axios instance with default config
 const api = axios.create({
-  baseURL: 'https://lottowins.online/api',
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -11,21 +11,21 @@ const api = axios.create({
 
 // Add a request interceptor to include auth token
 api.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config) => {
     const accessToken = localStorage.getItem('access_token');
-    if (accessToken && config.headers) {
+    if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
-  (error: AxiosError) => Promise.reject(error)
+  (error) => Promise.reject(error)
 );
 
 // Add a response interceptor to handle token refresh
 api.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  async (error: AxiosError) => {
-    const originalRequest = (error.config as AxiosRequestConfig & { _retry?: boolean });
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
     
     // Se não foi possível encontrar o servidor, retornar o erro original
     if (!error.response) {
@@ -62,9 +62,7 @@ api.interceptors.response.use(
           
           // Atualiza o cabeçalho de Authorization
           api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
-          }
+          originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
           
           // Tenta a requisição original novamente
           return api(originalRequest);
