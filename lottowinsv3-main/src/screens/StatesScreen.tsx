@@ -315,15 +315,6 @@ const StatesScreen: React.FC = () => {
                       <Star size={14} className="text-accent" /> Popular
                     </span>
                     
-                    <div className="w-20 h-20 rounded-full bg-[#1E2128] border-4 border-[#2A2F38] group-hover:border-accent/30 p-1 transition-all duration-300 shadow-2xl mb-4">
-                      <img 
-                        src={state.icon} 
-                        alt={state.name} 
-                        className="w-full h-full rounded-full object-cover" 
-                        onError={e => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    </div>
-                    
                     <h3 className="text-2xl font-extrabold text-white drop-shadow-lg group-hover:text-accent transition-colors duration-300">{state.name}</h3>
                     
                     <span className="text-base font-semibold text-white/80 bg-[#20242C] px-3 py-1 rounded-full tracking-widest border border-[#2A2F38] mt-1 shadow-lg">
@@ -382,15 +373,6 @@ const StatesScreen: React.FC = () => {
                 <div className="absolute -inset-1 bg-gradient-to-r from-accent/10 via-primary to-accent/20 rounded-xl blur opacity-30 group-hover:opacity-70 transition duration-500 group-hover:duration-200"></div>
                 
                 <Card className="relative flex flex-col items-center gap-2 p-5 border border-[#2A2F38] group-hover:border-accent/30 transition-all duration-300 bg-gradient-to-br from-[#1A1D23] to-[#151821] z-10 h-full">
-                  <div className="w-14 h-14 rounded-full bg-[#1E2128] border-2 border-[#2A2F38] group-hover:border-accent/20 p-1 transition-all duration-300 shadow-lg mb-2">
-                    <img 
-                      src={state.icon} 
-                      alt={state.name} 
-                      className="w-full h-full rounded-full object-cover" 
-                      onError={e => { e.currentTarget.style.display = 'none'; }}
-                    />
-                  </div>
-                  
                   <h3 className="text-lg font-bold text-white drop-shadow group-hover:text-accent/90 transition-colors duration-300">{state.name}</h3>
                   
                   <span className="text-xs font-semibold text-white/80 bg-[#20242C] px-2 py-1 rounded-full tracking-widest border border-[#2A2F38] shadow-md">{state.code}</span>
