@@ -27,7 +27,12 @@ SECRET_KEY = 'django-insecure-ksjh@)m*mfeawr!k6dhia8*yqwym%)h!+76(*aia+&cwbz%7g=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = [
+    'server.lottowins.online',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
