@@ -16,22 +16,6 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Game } from '../services/gameService';
 
-// Interface para corrigir o erro do tipo
-interface GameResult {
-  id: number;
-  draw_date: string;
-  draw_time: string;
-  numbers: string;
-  special_number?: string | number | null;
-  jackpot: string;
-  next_draw_date: string;
-  next_draw_time: string;
-  next_jackpot: string;
-  collected_at: string;
-  state_id: number;
-  state_code?: string;
-}
-
 // Helper function to parse numbers string into array
 const parseNumbers = (numbersString: string): number[] => {
   if (!numbersString) return [];
@@ -146,7 +130,7 @@ const DashboardScreen: React.FC = () => {
           
           <Card 
             variant="default" 
-            className="h-[300px] lg:h-[500px] overflow-hidden border border-primary-light/20 shadow-lg bg-primary relative"
+            className="h-[300px] w-full overflow-hidden border border-primary-light/20 shadow-lg bg-primary relative"
             size="sm"
           >
             <USMap navigateTo="states" />
@@ -187,34 +171,34 @@ const DashboardScreen: React.FC = () => {
         
         {/* Available Lotteries Section */}
         <section className="mb-6">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-text font-semibold text-3xl">Available Lotteries</h2>
+          <div className="mb-4">
+            <h2 className="text-text font-semibold text-2xl text-center mb-3">Available Lotteries</h2>
             <Button 
               variant="outline" 
-              className="h-10 px-6 flex items-center justify-center"
+              className="w-full h-11 flex items-center justify-center text-base font-semibold mb-2"
               onClick={() => navigate('/lottery/games')}
             >
               View All Games
             </Button>
           </div>
-          <div className="bg-[#181c22] p-6 rounded-lg border border-[#333] shadow-lg w-full">
+          <div className="bg-[#181c22] p-3 rounded-lg border border-[#333] shadow-lg w-full">
             {isMobile ? (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 {uniqueGames.slice(0, 12).map(game => (
                   <div
                     key={game.id}
-                    className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
-                    style={{ minHeight: '320px' }}
+                    className={`w-full rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-2 ${hasLargeNumberSet(game) ? 'pt-2 pb-1' : 'pt-3 pb-2'}`}
+                    style={{ minHeight: '220px' }}
                   >
                     {/* Glow effect behind logo */}
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-0 w-14 h-14 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-0 w-10 h-10 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
                     {/* Logo retangular arredondada */}
-                    <div className="w-14 h-8 rounded-lg bg-[#23272f] flex items-center justify-center shadow-lg mb-1 border-2 border-[#23272f] group-hover:border-accent/60 transition-all duration-300 relative z-10">
+                    <div className="w-12 h-8 rounded-lg bg-[#23272f] flex items-center justify-center shadow-lg mb-1 border-2 border-[#23272f] group-hover:border-accent/60 transition-all duration-300 relative z-10">
                       {game.logo_url ? (
                         <img
                           src={game.logo_url}
                           alt={game.name}
-                          className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
+                          className="w-14 h-10 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
                           onError={e => { e.currentTarget.style.display = 'none'; }}
                         />
                       ) : (
@@ -248,13 +232,8 @@ const DashboardScreen: React.FC = () => {
                           const hasManyNumbers = arr.length > 6;
                           const hasVeryManyNumbers = arr.length > 10;
                           const specialNumber = getSpecialNumber(game.results[0]);
-                          
-                          // Usar tamanho apropriado para as bolinhas de números
                           const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
-                          
-                          // Check if this number is the special number
                           const isSpecial = specialNumber !== null && num === specialNumber;
-                          
                           return (
                             <div key={idx} className="drop-shadow-lg flex justify-center">
                               <LotteryNumberBall
@@ -565,7 +544,7 @@ const DashboardScreen: React.FC = () => {
                 </div>
                 <Card 
                   variant="default" 
-                  className="h-[300px] lg:h-[500px] overflow-hidden border border-primary-light/20 shadow-lg bg-primary relative"
+                  className="h-[600px] lg:h-[700px] overflow-hidden border border-primary-light/20 shadow-lg bg-primary"
                   size="sm"
                 >
                   <USMap navigateTo="states" />
