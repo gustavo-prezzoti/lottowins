@@ -7,6 +7,7 @@ from .serializers import UserSerializer, UserCreateSerializer, ChangePasswordSer
 from .models import Role
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -477,3 +478,7 @@ class UserViewSet(viewsets.ModelViewSet):
             
         serializer = GameSerializer(games, many=True)
         return Response({"games": serializer.data})
+
+@login_required
+def profile_view(request):
+    return render(request, 'profile.html', {'user': request.user})

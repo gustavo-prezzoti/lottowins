@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Lotto Wins</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: rgba(0,0,0,0.4);
+            padding: 32px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .user-info {
+            margin-bottom: 2rem;
+        }
+        .user-info p {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        a.button {
+            display: block;
+            background: #ffb347;
+            color: #1e3c72;
+            padding: 12px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+        a.button:hover {
+            background: #ffd580;
+        }
+        .links {
+            margin-top: 2rem;
+        }
+        .links a {
+            color: #ffb347;
+            text-decoration: underline;
+            margin: 0 8px;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 16px 6px; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meu Perfil</h1>
+        <div class="user-info">
+            <p><strong>Usuário:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+        <a href="/accounts/password_change/" class="button">Trocar Senha</a>
+        <div class="links">
+            <a href="/swagger/">Ir para a documentação (Swagger)</a> |
+            <a href="/accounts/logout/">Sair</a>
+        </div>
+    </div>
+</body>
+</html> 
