@@ -42,13 +42,14 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 class UserCreateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True, max_length=150)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
     profile_photo = Base64ImageField(required=False)
 
     class Meta:
         model = User
-        fields = ['email', 'name', 'password', 'password2', 'profile_photo', 'role']
+        fields = ['username', 'email', 'name', 'password', 'password2', 'profile_photo', 'role']
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -58,11 +59,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         password = validated_data.pop('password')
-        
         user = User(
+            username=validated_data['username'],
             email=validated_data['email'],
             name=validated_data['name'],
-            **{k: v for k, v in validated_data.items() if k not in ['email', 'name']}
+            **{k: v for k, v in validated_data.items() if k not in ['username', 'email', 'name']}
         )
         user.set_password(password)
         user.save()
