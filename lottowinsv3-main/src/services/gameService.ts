@@ -1,7 +1,7 @@
 import api from './api';
 import { State } from './stateService';
 
-const API_BASE = 'https://server.lottowins.online';
+const API_BASE = 'https://server.lottowins.online/';
 function completeLogoUrl(logo_url: string) {
   if (!logo_url) return '';
   if (logo_url.startsWith('http')) return logo_url;
