@@ -366,12 +366,14 @@ const DashboardScreen: React.FC = () => {
                             <span>{formatDate(game.results[0].draw_date)}</span>
                           </div>
                         )}
+                        {/* Spacer para empurrar o botão para a base */}
+                        <div className="flex-grow" />
                         {/* Botão de detalhes */}
                         <Button
                           variant="outline"
                           size="sm"
                           fullWidth
-                          className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-auto"
+                          className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-2"
                           onClick={() => navigate(`/lottery/games/${game.id}`)}
                         >
                           <span>View Details</span>
@@ -629,9 +631,9 @@ const DashboardScreen: React.FC = () => {
                                 hasVeryLargeNumberSet(game) 
                                   ? 'gap-0.5 grid grid-cols-4 w-full' 
                                   : hasLargeNumberSet(game) 
-                                    ? 'gap-0.5 mx-auto' 
-                                    : 'gap-1'
-                              } mb-1`}
+                                    ? 'gap-1 mx-auto' 
+                                    : 'gap-2'
+                              } mb-2`}
                             >
                               {parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
                                 const hasManyNumbers = arr.length > 6;
@@ -663,12 +665,14 @@ const DashboardScreen: React.FC = () => {
                               <span>{formatDate(game.results[0].draw_date)}</span>
                             </div>
                           )}
+                          {/* Spacer para empurrar o botão para a base */}
+                          <div className="flex-grow" />
                           {/* Botão de detalhes */}
                           <Button
                             variant="outline"
                             size="sm"
                             fullWidth
-                            className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-auto"
+                            className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-2"
                             onClick={() => navigate(`/lottery/games/${game.id}`)}
                           >
                             <span>View Details</span>
