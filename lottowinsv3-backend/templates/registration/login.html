@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LottoWins</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: #fff;
+            padding: 2.5rem 2rem 2rem 2rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(30,60,114,0.18);
+            width: 100%;
+            max-width: 370px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-container h2 {
+            margin-bottom: 1.5rem;
+            color: #1e3c72;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .login-container form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .login-container label {
+            font-size: 1rem;
+            color: #2a5298;
+            margin-bottom: 0.3rem;
+            margin-top: 1rem;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            padding: 0.7rem 1rem;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            background: #f7fafc;
+            transition: border 0.2s;
+        }
+        .login-container input[type="text"]:focus,
+        .login-container input[type="password"]:focus {
+            border: 1.5px solid #1e3c72;
+            outline: none;
+        }
+        .login-container button {
+            margin-top: 1.2rem;
+            padding: 0.8rem;
+            background: linear-gradient(90deg, #1e3c72 60%, #2a5298 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px 0 rgba(30,60,114,0.10);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .login-container button:hover {
+            background: linear-gradient(90deg, #2a5298 60%, #1e3c72 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .error-message {
+            color: #d32f2f;
+            background: #ffeaea;
+            border: 1px solid #ffcdd2;
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+        }
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 1.5rem 0.7rem 1.2rem 0.7rem;
+                max-width: 98vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Bem-vindo ao LottoWins</h2>
+        {% if form.errors %}
+            <div class="error-message">Usuário ou senha inválidos.</div>
+        {% endif %}
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            {% endfor %}
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+</body>
+</html> 

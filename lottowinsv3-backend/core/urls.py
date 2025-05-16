@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/lottery/', include('lotterydata.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('accounts/login/', __import__('django.contrib.auth.views').contrib.auth.views.LoginView.as_view(), name='login'),
 ]
 
 # Adiciona URLs para servir arquivos de mídia em desenvolvimento
