@@ -16,6 +16,22 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Game } from '../services/gameService';
 
+// Interface para corrigir o erro do tipo
+interface GameResult {
+  id: number;
+  draw_date: string;
+  draw_time: string;
+  numbers: string;
+  special_number?: string | number | null;
+  jackpot: string;
+  next_draw_date: string;
+  next_draw_time: string;
+  next_jackpot: string;
+  collected_at: string;
+  state_id: number;
+  state_code?: string;
+}
+
 // Helper function to parse numbers string into array
 const parseNumbers = (numbersString: string): number[] => {
   if (!numbersString) return [];
