@@ -146,7 +146,7 @@ const DashboardScreen: React.FC = () => {
           
           <Card 
             variant="default" 
-            className="h-[300px] w-full overflow-hidden border border-primary-light/20 shadow-lg bg-primary relative"
+            className="h-[300px] lg:h-[500px] overflow-hidden border border-primary-light/20 shadow-lg bg-primary relative"
             size="sm"
           >
             <USMap navigateTo="states" />
@@ -565,7 +565,7 @@ const DashboardScreen: React.FC = () => {
                 </div>
                 <Card 
                   variant="default" 
-                  className="h-[600px] lg:h-[700px] overflow-hidden border border-primary-light/20 shadow-lg bg-primary"
+                  className="h-[300px] lg:h-[500px] overflow-hidden border border-primary-light/20 shadow-lg bg-primary relative"
                   size="sm"
                 >
                   <USMap navigateTo="states" />
