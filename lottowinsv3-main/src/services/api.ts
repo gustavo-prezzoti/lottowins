@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -11,21 +11,21 @@ const api = axios.create({
 
 // Add a request interceptor to include auth token
 api.interceptors.request.use(
-  (config) => {
+  (config: AxiosRequestConfig) => {
     const accessToken = localStorage.getItem('access_token');
-    if (accessToken) {
+    if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error: AxiosError) => Promise.reject(error)
 );
 
 // Add a response interceptor to handle token refresh
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    const originalRequest = (error.config as AxiosRequestConfig & { _retry?: boolean });
     
     // Se não foi possível encontrar o servidor, retornar o erro original
     if (!error.response) {
@@ -62,7 +62,9 @@ api.interceptors.response.use(
           
           // Atualiza o cabeçalho de Authorization
           api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-          originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+          }
           
           // Tenta a requisição original novamente
           return api(originalRequest);
