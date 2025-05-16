@@ -1,6 +1,13 @@
 import api from './api';
 import { State } from './stateService';
 
+const API_BASE = 'https://server.lottowins.online';
+function completeLogoUrl(logo_url: string) {
+  if (!logo_url) return '';
+  if (logo_url.startsWith('http')) return logo_url;
+  return API_BASE + logo_url;
+}
+
 export interface GameResult {
   id: number;
   draw_date: string;
@@ -54,7 +61,10 @@ class GameService {
     try {
       const params = stateCode ? { state_code: stateCode } : {};
       const response = await api.get<GamesResponse>('/lottery/games/with-results/', { params });
-      return response.data.games;
+      return response.data.games.map(game => ({
+        ...game,
+        logo_url: completeLogoUrl(game.logo_url),
+      }));
     } catch (error) {
       console.error('Error fetching games with results:', error);
       throw new Error('Failed to fetch games data');
@@ -92,7 +102,10 @@ class GameService {
         gameData.results = [];
       }
       
-      return gameData;
+      return {
+        ...gameData,
+        logo_url: completeLogoUrl(gameData.logo_url),
+      };
     } catch (error) {
       console.error(`Error fetching game with id ${id}:`, error);
       throw new Error(`Failed to fetch game with id ${id}`);
