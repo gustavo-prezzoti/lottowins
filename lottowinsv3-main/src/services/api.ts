@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 
-// Create axios instance with default config
+// baseURL mockada para produção
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: 'https://lottowins.online/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
