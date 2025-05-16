@@ -188,7 +188,7 @@ const DashboardScreen: React.FC = () => {
                   <div
                     key={game.id}
                     className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
-                    style={{ height: '280px' }}
+                    style={{ minHeight: '320px' }}
                   >
                     {/* Glow effect behind logo */}
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-0 w-14 h-14 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
@@ -296,7 +296,7 @@ const DashboardScreen: React.FC = () => {
                     <SwiperSlide key={game.id}>
                       <div
                         className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
-                        style={{ minHeight: '340px', maxHeight: '340px', height: '340px' }}
+                        style={{ minHeight: '320px' }}
                       >
                         {/* Glow effect behind logo */}
                         <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-0 w-24 h-24 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
@@ -593,7 +593,7 @@ const DashboardScreen: React.FC = () => {
                       <SwiperSlide key={game.id}>
                         <div
                           className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
-                          style={{ minHeight: '340px', maxHeight: '340px', height: '340px' }}
+                          style={{ minHeight: '320px' }}
                         >
                           {/* Glow effect behind logo */}
                           <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-0 w-24 h-24 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />

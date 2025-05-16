@@ -205,10 +205,12 @@ const USMap: React.FC<USMapProps> = ({ navigateTo = 'states' }) => {
                       className={`
                         ${getRegionColor(stateForCell.region, hoveredState === stateForCell.abbr)}
                         w-full h-full flex items-center justify-center text-white font-bold 
-                        text-[10px]
+                        text-xs sm:text-sm md:text-base
+                        p-1
                         transition-all duration-200 hover:scale-105 hover:z-50
                         border border-white/20 shadow
                         ${hoveredState === stateForCell.abbr ? 'z-40 ring-1 ring-white shadow-lg' : 'z-10'}`}
+                      style={{ minWidth: 28, minHeight: 28 }}
                       onClick={() => handleStateClick(stateForCell.abbr, stateForCell.name)}
                       onMouseEnter={() => setHoveredState(stateForCell.abbr)}
                       onMouseLeave={() => setHoveredState(null)}
