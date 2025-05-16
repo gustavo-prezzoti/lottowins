@@ -188,15 +188,6 @@ const LoginScreen: React.FC = () => {
           >
             Sign In
           </Button>
-          
-          <div className="text-center">
-            <button 
-              type="button"
-              className="text-sm text-primary-500 hover:text-primary-600"
-            >
-              Forgot your password?
-            </button>
-          </div>
         </div>
       </Card>
     </div>
