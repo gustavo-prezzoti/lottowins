@@ -259,7 +259,7 @@ const GamesListScreen: React.FC = () => {
                       >
                         {/* Left: Logo + Name + States */}
                         <div className="flex items-center gap-4 min-w-0 flex-1">
-                          <div className="w-14 h-14 rounded-xl bg-[#181a1e] flex items-center justify-center overflow-hidden border-2 border-[#23272f] group-hover:border-accent/60 transition-all duration-200">
+                          <div className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto">
                             {game.logo_url ? (
                               <img src={game.logo_url} alt={game.name} className="w-10 h-10 object-contain" />
                             ) : (
