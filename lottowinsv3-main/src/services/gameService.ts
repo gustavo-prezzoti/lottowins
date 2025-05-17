@@ -91,14 +91,11 @@ class GameService {
    */
   async getGameById(id: number): Promise<Game> {
     try {
-      console.log(`Fetching game with ID: ${id}`);
       const response = await api.get<GameDetailResponse>(`/lottery/games/${id}/`);
-      console.log('API response for game by ID:', response.data);
       
       const gameData = response.data;
       
       if (!gameData.results) {
-        console.log('Adding empty results array to game data');
         gameData.results = [];
       }
       

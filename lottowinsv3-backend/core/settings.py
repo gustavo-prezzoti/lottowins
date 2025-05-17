@@ -180,3 +180,7 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+# Login redirect
+LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_URL = '/accounts/login/'

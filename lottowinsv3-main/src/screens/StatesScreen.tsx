@@ -115,12 +115,10 @@ const StatesScreen: React.FC = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const stateParam = queryParams.get('state');
-    console.log("URL param 'state':", stateParam);
     
     if (stateParam) {
       setSearch(stateParam);
       initialLoadRef.current = false;
-      console.log("Setting search to:", stateParam);
       
       // Scroll to top of page
       window.scrollTo({
@@ -139,7 +137,6 @@ const StatesScreen: React.FC = () => {
 
   // Transform API states to our format with regions and icons
   const formattedStates = useMemo(() => {
-    console.log("Transforming states:", states.length);
     return states.map(state => ({
       code: state.code.toUpperCase(),
       name: state.name,
@@ -149,13 +146,11 @@ const StatesScreen: React.FC = () => {
   }, [states]);
 
   const filtered = useMemo(() => {
-    console.log("Filtering with search:", search);
     const results = formattedStates.filter(s =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.code.toLowerCase().includes(search.toLowerCase())
     );
     
-    console.log("Found results:", results.length);
     
     return results;
   }, [formattedStates, search]);

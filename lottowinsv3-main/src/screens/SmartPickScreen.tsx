@@ -5,7 +5,6 @@ import useStates from '../hooks/useStates';
 import { useWindowSize } from '../hooks/useWindowSize';
 import GameList from './SmartPickScreen/GameList';
 import SmartNumbers from './SmartPickScreen/SmartNumbers';
-import predictionService from '../services/predictionService';
 import { useNavigate } from 'react-router-dom';
 
 // Custom styles for dark theme in SmartPickScreen
@@ -18,34 +17,19 @@ const SmartPickScreen: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [numbers, setNumbers] = useState<number[]>([]);
   const [hasGenerated, setHasGenerated] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState<number>(0);
   const { isMobile } = useWindowSize();
   const { states } = useStates();
   
   // Load saved predictions on component mount
   useEffect(() => {
-    const loadPredictions = async () => {
-      // Implementation remains the same but we don't need to store the results
-      // since we're navigating to another screen instead
-      try {
-        if (selectedLottery && games.length > 0) {
-          const selectedGame = games.find(game => game.slug === selectedLottery);
-          if (selectedGame) {
-            const stateId = selectedGame.states && selectedGame.states.length > 0 
-              ? selectedGame.states[0].id 
-              : undefined;
-            await predictionService.getPredictionsByGame(selectedGame.id, stateId);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching predictions from API:', error);
-      }
-    };
-    
-    loadPredictions();
-    
-    // Reset numbers and generated state when selected lottery changes
+    // Always reset values when lottery changes
     setNumbers([]);
     setHasGenerated(false);
+    setAiConfidence(0);
+    
+    // Don't load predictions or confidence automatically when selecting a game
+    // Only load confidence when actually generating new numbers
   }, [selectedLottery]);
   
   const stateCodeLowercase = selectedState ? selectedState.toLowerCase() : undefined;
@@ -58,23 +42,13 @@ const SmartPickScreen: React.FC = () => {
     setSelectedLottery('');
     setNumbers([]);
     setHasGenerated(false);
+    setAiConfidence(0);
   }, [selectedState]);
   
   const sortedGames = useMemo(() => {
-    // Get current date for filtering upcoming games
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // First, filter for games with future draws (upcoming games)
-    const gamesWithFutureDraws = games.filter(game => {
-      if (!game.results || !game.results[0]?.next_draw_date) return false;
-      const drawDate = new Date(game.results[0].next_draw_date);
-      drawDate.setHours(0, 0, 0, 0);
-      return drawDate >= today;
-    });
-    
-    // Use upcoming games if available, otherwise fall back to all games
-    const filteredGames = gamesWithFutureDraws.length > 0 ? gamesWithFutureDraws : games;
+    // Use all games regardless of draw date
+    // Remove the filtering for future dates as requested
+    const filteredGames = games;
     
     // Sort by upcoming draw date (nearest first)
     return [...filteredGames].sort((a, b) => {
@@ -112,6 +86,7 @@ const SmartPickScreen: React.FC = () => {
       setSelectedLottery(lottery);
       setNumbers([]);
       setHasGenerated(false);
+      setAiConfidence(0);
     }
   };
 
@@ -144,6 +119,7 @@ const SmartPickScreen: React.FC = () => {
                   loading={gamesLoading}
                   states={states}
                   isMobile={isMobile}
+                  aiConfidence={aiConfidence}
                 />
               </div>
               {/* Geração de números */}
@@ -159,6 +135,8 @@ const SmartPickScreen: React.FC = () => {
                   setHasGenerated={setHasGenerated}
                   isMobile={isMobile}
                   showHistory={false}
+                  aiConfidence={aiConfidence}
+                  setAiConfidence={setAiConfidence}
                 />
               </div>
               {/* Instruções/ajuda */}
@@ -180,6 +158,7 @@ const SmartPickScreen: React.FC = () => {
                   loading={gamesLoading}
                   states={states}
                   isMobile={isMobile}
+                  aiConfidence={aiConfidence}
                 />
               </div>
               <div className="col-span-8">
@@ -193,6 +172,8 @@ const SmartPickScreen: React.FC = () => {
                   setHasGenerated={setHasGenerated}
                   isMobile={isMobile}
                   showHistory={false}
+                  aiConfidence={aiConfidence}
+                  setAiConfidence={setAiConfidence}
                 />
               </div>
             </div>

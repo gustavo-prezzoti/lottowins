@@ -1,4 +1,5 @@
 import api from './api';
+import axios from 'axios';
 
 export interface PredictionRequest {
   game_id: number;
@@ -74,8 +75,41 @@ class PredictionService {
         requestData.state_id = stateId;
       }
       
-      const response = await api.post<PredictionResponse>('/lottery/predictions/analyze/', requestData);
-      return response.data;
+      const response = await api.post<any>('/lottery/predictions/generate/', requestData);
+      
+      
+      // Handle direct response format
+      if (response) {
+        // Map API fields to our Prediction interface
+        const prediction: Prediction = {
+          id: response.data.id || Math.floor(Math.random() * 10000),
+          game_name: response.data.game_name || "Lottery Game",
+          state_code: response.data.state_code || "",
+          numbers: response.data.predicted_numbers || "",
+          special_number: response.data.predicted_special_number,
+          confidence: response.data.confidence_score || 0,
+          summary: response.data.analysis_summary || "Smart prediction",
+          analysis_data: {
+            hot_numbers: response.data.hot_numbers || "",
+            cold_numbers: response.data.cold_numbers || "",
+            overdue_numbers: response.data.overdue_numbers || ""
+          },
+          created_at: new Date().toISOString()
+        };
+        
+        
+        return {
+          message: "Prediction generated successfully",
+          prediction,
+          success: true
+        };
+      }
+      
+      return {
+        message: "Failed to generate prediction",
+        prediction: null as any,
+        success: false
+      };
     } catch (error) {
       console.error('Error generating prediction:', error);
       throw new Error('Failed to generate smart pick numbers');
@@ -142,8 +176,6 @@ class PredictionService {
       const response = await api.get<UserPredictionsResponse>('/lottery/predictions/by-user/', { params });
       
       if (response.data && response.data.results) {
-        // Log the raw API response for debugging
-        console.log("API response:", response.data);
         
         // Transformar os resultados da API no formato PredictionListResponse
         const predictions = response.data.results.map(item => ({
@@ -195,8 +227,24 @@ class PredictionService {
    * @param numbersString The string of numbers to parse (e.g. "1, 2, 3, 4, 5")
    */
   parseNumbersString(numbersString: string): number[] {
-    if (!numbersString) return [];
-    return numbersString.split(/[,+]/).map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
+    if (!numbersString) {
+      return [];
+    }
+    
+    
+    // Split by comma or plus sign
+    const numberStrings = numbersString.split(/[,+]/);
+    
+    // Convert to numbers and filter out NaN
+    const numbers = numberStrings
+      .map(numStr => {
+        const trimmed = numStr.trim();
+        const parsed = parseInt(trimmed, 10);
+        return parsed;
+      })
+      .filter(num => !isNaN(num));
+    
+    return numbers;
   }
   
   /**
@@ -234,6 +282,57 @@ class PredictionService {
     } catch (error) {
       console.error('Error getting saved predictions:', error);
       return [];
+    }
+  }
+
+  /**
+   * Salva uma predição no backend
+   */
+  async savePredictionToBackend(data: {
+    game_id: number;
+    state_id?: number;
+    predicted_numbers: string;
+    predicted_special_number?: string | null;
+    confidence_score: number;
+    analysis_summary: string;
+    hot_numbers?: string;
+    cold_numbers?: string;
+    overdue_numbers?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): Promise<any> {
+    try {
+      const response = await api.post('/lottery/predictions/save/', data);
+      return response.data;
+    } catch (error: unknown) {
+      console.error('Error saving prediction:', error);
+      
+      // Log more detailed error information if available
+      if (axios.isAxiosError(error) && error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response data:', error.response.data);
+        console.error('Error response status:', error.response.status);
+        console.error('Error response headers:', error.response.headers);
+        
+        // Check for error message in various formats the API might return
+        const responseData = error.response.data;
+        if (typeof responseData === 'object') {
+          // Check for message field first (most APIs use this)
+          if ('message' in responseData && typeof responseData.message === 'string') {
+            throw new Error(responseData.message);
+          }
+          // Then check for error field
+          else if ('error' in responseData && typeof responseData.error === 'string') {
+            throw new Error(responseData.error);
+          }
+          // Check for detail field (Django REST often uses this)
+          else if ('detail' in responseData && typeof responseData.detail === 'string') {
+            throw new Error(responseData.detail);
+          }
+        }
+      }
+      
+      throw new Error('Failed to save prediction');
     }
   }
 }

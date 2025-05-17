@@ -43,7 +43,19 @@ interface GameListProps {
   loading: boolean;
   states: State[];
   isMobile: boolean;
+  aiConfidence?: number;
 }
+
+/**
+ * Returns the appropriate CSS class for AI confidence based on thresholds
+ * @param confidence The confidence value as a percentage
+ * @returns CSS class name for the appropriate confidence level
+ */
+const getConfidenceColorClass = (confidence: number): string => {
+  if (confidence > 80) return 'text-green-500'; // High confidence
+  if (confidence >= 60) return 'text-yellow-500'; // Medium confidence
+  return 'text-red-500'; // Low confidence
+};
 
 const GameList: React.FC<GameListProps> = ({
   games,
@@ -53,7 +65,8 @@ const GameList: React.FC<GameListProps> = ({
   onStateChange,
   loading,
   states,
-  isMobile
+  isMobile,
+  aiConfidence = 0
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
   const [sortBy, setSortBy] = useState<SortOption>('date');
@@ -114,12 +127,17 @@ const GameList: React.FC<GameListProps> = ({
 
   return (
     <Card className={isMobile ? 'mb-4 rounded-2xl shadow-md p-3 bg-[#1A1D23] border border-[#2A2F38]' : 'mb-0 bg-[#1A1D23] border border-[#2A2F38] shadow-xl p-6'}>
-      <div className="flex items-center justify-between mb-2">
-        <h2 className={isMobile ? 'text-text font-bold text-base' : 'text-text font-bold text-xl mb-4'}>Select Game</h2>
-        <div className="text-text-muted text-xs">
-          AI Confidence: <span className="text-accent font-semibold">92%</span>
+              <div className="flex items-center justify-between mb-2">
+          <h2 className={isMobile ? 'text-text font-bold text-base' : 'text-text font-bold text-xl mb-4'}>Select Game</h2>
+          {aiConfidence !== undefined && aiConfidence > 0 && (
+            <div className="text-text-muted text-xs">
+              AI Confidence: 
+              <span className={`font-semibold ${getConfidenceColorClass(aiConfidence)}`}>
+                {` ${aiConfidence.toFixed(1)}%`}
+              </span>
+            </div>
+          )}
         </div>
-      </div>
       
       <div className="mb-4 space-y-3">
         {/* State Selection */}
@@ -183,19 +201,19 @@ const GameList: React.FC<GameListProps> = ({
             sortedGames.map(game => (
               <button
                 key={game.id}
-                className={`group flex items-center gap-4 w-full px-4 py-4 rounded-2xl border-2 transition-all duration-150
+                className={`group flex items-center ${isMobile ? 'gap-2' : 'gap-4'} w-full px-4 py-4 rounded-2xl border-2 transition-all duration-150
                   ${selectedLottery === game.slug
-                    ? 'bg-accent/90 border-accent shadow-lg scale-[1.03] text-text'
+                    ? 'bg-accent/90 border-accent shadow-lg scale-[1.03] text-white'
                     : 'bg-[#20232b] border-transparent hover:border-accent/60 hover:bg-accent/10 text-text'}
                 `}
                 onClick={() => onSelect(game.slug)}
               >
-                <div className="w-20 h-14 rounded-lg bg-white flex items-center justify-center overflow-hidden">
+                <div className={"flex-shrink-0 max-w-[48px] max-h-[40px] w-full h-full rounded-lg bg-white flex items-center justify-center overflow-hidden"}>
                   {game.logo_url ? (
                     <img
                       src={game.logo_url}
                       alt={game.name}
-                      className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
+                      className="w-full h-full object-scale-down p-2 bg-white rounded-lg shadow-md mx-auto"
                       onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                     />
                   ) : (
@@ -204,18 +222,23 @@ const GameList: React.FC<GameListProps> = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold truncate text-base">{game.name}</h3>
-                  <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-text-muted">
+                  <div className={`flex flex-wrap items-center gap-2 mt-1 text-xs ${selectedLottery === game.slug ? 'text-white/80' : 'text-text-muted'}`}>
                     {game.results[0]?.next_draw_date && (
                       <span className="flex items-center gap-1">
                         <Calendar size={12} />
                         {formatDate(game.results[0].next_draw_date)}
                       </span>
                     )}
-                    {game.results[0]?.next_jackpot && (
-                      <span className="bg-accent/10 text-accent px-2 py-0.5 rounded-full text-[10px] font-medium">
-                        {game.results[0].next_jackpot}
-                      </span>
-                    )}
+                    {/* Always show jackpot, use "Not Estimated" when not available */}
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                      selectedLottery === game.slug 
+                        ? 'bg-white/20 text-white' 
+                        : game.results[0]?.next_jackpot 
+                          ? 'bg-accent/10 text-accent'
+                          : 'bg-gray-700/30 text-gray-400'
+                    }`}>
+                      {game.results[0]?.next_jackpot || 'Not Estimated'}
+                    </span>
                     {game.states && game.states.length > 0 && (
                       <span className="flex items-center gap-1">
                         <MapPin size={12} />
@@ -224,7 +247,7 @@ const GameList: React.FC<GameListProps> = ({
                     )}
                   </div>
                 </div>
-                <ChevronRight size={20} className="opacity-30 group-hover:opacity-80 transition" />
+                <ChevronRight size={20} className={`transition ${selectedLottery === game.slug ? 'opacity-80' : 'opacity-30 group-hover:opacity-80'}`} />
               </button>
             ))
           )}

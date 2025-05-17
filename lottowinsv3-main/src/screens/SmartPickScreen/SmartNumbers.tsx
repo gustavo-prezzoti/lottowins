@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
 import SmartPickLotteryBall from './SmartPickLotteryBall';
 import { Brain, Copy, Save, RefreshCw, TrendingUp, Clock } from 'lucide-react';
-import { playSuccessSound, triggerCelebration } from '../../utils/sound';
 import { formatDate } from '../../utils/format';
 import predictionService from '../../services/predictionService';
+import gameOddsService from '../../services/gameOddsService';
 import { Game } from '../../services/gameService';
+import { useToast } from '../../components/Toast';
+import { Prediction } from '../../services/predictionService';
 
 interface SmartNumbersProps {
   selectedGame: Game | undefined;
@@ -18,17 +20,12 @@ interface SmartNumbersProps {
   setHasGenerated: React.Dispatch<React.SetStateAction<boolean>>;
   isMobile: boolean;
   showHistory: boolean;
+  aiConfidence?: number;
+  setAiConfidence?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const gameOddsMap: Record<string, string> = {
-  'Powerball': '1:292,201,338',
-  'Mega Millions': '1:302,575,350',
-  'Cash4Life': '1:21,846,048',
-  // ... (adicione outros jogos conforme necessário)
-};
-
 const getGameOdds = (gameName: string): string => {
-  return gameOddsMap[gameName] || 'Odds not available';
+  return gameOddsService.getGameOdds(gameName);
 };
 
 const getDaysUntilDraw = (drawDate: string): string => {
@@ -55,6 +52,20 @@ const parseNumbers = (numbersString: string): number[] => {
   return numbersString.split(/[,+]/).map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
 };
 
+// Componente para exibição de texto com transição
+const FadeMessage: React.FC<{ message: string; isActive: boolean }> = ({ message, isActive }) => (
+  <div 
+    className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
+      isActive ? 'opacity-100' : 'opacity-0'
+    }`}
+    style={{ pointerEvents: isActive ? 'auto' : 'none' }}
+  >
+    <div className="bg-black/30 px-6 py-3 rounded-xl backdrop-blur-sm">
+      <span className="text-xl font-bold text-white">{message}</span>
+    </div>
+  </div>
+);
+
 const SmartNumbers: React.FC<SmartNumbersProps> = ({
   selectedGame,
   numbers,
@@ -64,15 +75,96 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
   hasGenerated,
   setHasGenerated,
   isMobile,
-  showHistory
+  showHistory,
+  aiConfidence,
+  setAiConfidence
 }) => {
   const [specialNumber, setSpecialNumber] = useState<number | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [messageStep, setMessageStep] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
+  const [processingTime, setProcessingTime] = useState<number>(5000);
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+  const [generatedPrediction, setGeneratedPrediction] = useState<Prediction | null>(null);
+  
+  // Array de mensagens de carregamento
+  const loadingMessages = [
+    'LottoWins AI is searching for your prediction…',
+    'Calculating prediction…',
+    'Prediction found!'
+  ];
+
+  // Efeito para controlar a sequência de mensagens e o progresso da barra
+  useEffect(() => {
+    if (!isGenerating) {
+      setMessageStep(0);
+      setProgress(0);
+      return;
+    }
+
+    // Gerar um tempo de processamento aleatório entre 14 e 25 segundos
+    const randomTime = Math.floor(Math.random() * (25000 - 14000 + 1)) + 14000;
+    setProcessingTime(randomTime);
+
+    // Configurar os pontos de transição das mensagens
+    const firstTransition = randomTime * 0.35; // Primeira mensagem até ~35% do tempo
+    const secondTransition = randomTime * 0.75; // Segunda mensagem até ~75% do tempo
+
+    // Primeira mensagem
+    setLoadingMessage(loadingMessages[0]);
+    setMessageStep(0);
+    
+    // Segunda mensagem
+    const timer1 = setTimeout(() => {
+      setMessageStep(1);
+      setLoadingMessage(loadingMessages[1]);
+    }, firstTransition);
+    
+    // Terceira mensagem
+    const timer2 = setTimeout(() => {
+      setMessageStep(2);
+      setLoadingMessage(loadingMessages[2]);
+    }, secondTransition);
+    
+    // Progresso suave da barra
+    const progressInterval = 50; // Atualizar a cada 50ms
+    const totalSteps = randomTime / progressInterval;
+    const progressStep = 100 / totalSteps;
+    
+    let currentProgress = 0;
+    const progressTimer = setInterval(() => {
+      currentProgress += progressStep;
+      if (currentProgress > 100) currentProgress = 100;
+      
+      setProgress(currentProgress);
+      
+      if (currentProgress >= 100) {
+        clearInterval(progressTimer);
+      }
+    }, progressInterval);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearInterval(progressTimer);
+    };
+  }, [isGenerating]);
 
   const handleGenerateNumbers = async () => {
     if (!selectedGame) return;
     setIsGenerating(true);
+    setMessageStep(0);
+    setProgress(0);
+    // Reset AI confidence when starting new generation
+    if (setAiConfidence) {
+      setAiConfidence(0);
+    }
     
     try {
+      // Usar o tempo de processamento gerado aleatoriamente
+      await new Promise(resolve => setTimeout(resolve, processingTime));
+      
       // Get state ID if available
       const stateId = selectedGame.states && selectedGame.states.length > 0 
         ? selectedGame.states[0].id 
@@ -81,46 +173,74 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
       // Call the prediction API
       const response = await predictionService.generatePrediction(selectedGame.id, stateId);
       
+      
       if (response.success && response.prediction) {
-        // Parse the numbers from the response
-        const mainNumbers = predictionService.parseNumbersString(response.prediction.numbers);
+        setGeneratedPrediction(response.prediction);
         
-        // Parse special number if it exists
-        let special: number | null = null;
-        if (response.prediction.special_number) {
-          special = parseInt(response.prediction.special_number, 10);
+        // Parse the numbers from the response
+        const regularNumbers = predictionService.parseNumbersString(response.prediction.numbers);
+        
+        // Set the AI confidence value
+        if (setAiConfidence && response.prediction.confidence) {
+          setAiConfidence(response.prediction.confidence);
         }
         
-        // Set the numbers directly from the API response - don't add the special number to the array
-        setNumbers(mainNumbers);
-        setSpecialNumber(special);
+        // Check if there's a special number in the response
+        if (response.prediction.special_number) {
+          // If special number exists in response, use it
+          const specialNum = parseInt(response.prediction.special_number, 10);
+          setSpecialNumber(specialNum);
+          
+          // Important: Include the special number in the numbers array
+          // Instead of filtering it out, include all regular numbers first
+          const allNumbers = [...regularNumbers];
+          
+          // Make sure the special number isn't already in the array
+          if (!allNumbers.includes(specialNum)) {
+            allNumbers.push(specialNum);
+          }
+          
+          // Sort the regular numbers but ensure special number is last
+          const sortedRegularNumbers = regularNumbers.sort((a, b) => a - b);
+          
+          // Final array with sorted regular numbers and special number at the end
+          const finalNumbers = [...sortedRegularNumbers, specialNum];
+          
+          setNumbers(finalNumbers);
+        } else {
+          // Sort the numbers in ascending order
+          const sortedNumbers = [...regularNumbers].sort((a, b) => a - b);
+          setNumbers(sortedNumbers);
+          setSpecialNumber(null);
+        }
         
-        // Save prediction to local storage
         predictionService.savePrediction(response.prediction);
       } else {
-        // Fallback to random generation if API response is not successful
+        if (setAiConfidence) {
+          setAiConfidence(0);
+        }
         generateRandomNumbers();
       }
     } catch (error) {
       console.error('Error generating prediction:', error);
-      // Fallback to random generation on error
+      // On error, reset confidence
+      if (setAiConfidence) {
+        setAiConfidence(0);
+      }
       generateRandomNumbers();
     } finally {
       setIsGenerating(false);
       setHasGenerated(true);
-      playSuccessSound();
-      triggerCelebration();
+      setLoadingMessage('');
     }
   };
-  
+
   // Fallback random number generation
   const generateRandomNumbers = () => {
     if (!selectedGame) return;
-    
+
     let mainNumbersMax = 69;
-    let specialNumberMax = 0;
     let numberCount = 5;
-    let hasSpecialNumber = false;
     
     if (selectedGame.results && selectedGame.results.length > 0 && selectedGame.results[0].numbers) {
       const sampleNumbers = parseNumbers(selectedGame.results[0].numbers);
@@ -128,29 +248,17 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
         const maxSampleNumber = Math.max(...sampleNumbers);
         mainNumbersMax = Math.max(maxSampleNumber + 5, 45);
         numberCount = sampleNumbers.length;
-        if (selectedGame.name.includes('Powerball') || 
-            selectedGame.name.includes('Mega') || 
-            selectedGame.name.includes('Cash4Life')) {
-          hasSpecialNumber = true;
-          specialNumberMax = maxSampleNumber < 26 ? 26 : maxSampleNumber;
-        }
       }
     } else {
       if (selectedGame.name.includes('Powerball')) {
         mainNumbersMax = 69;
-        specialNumberMax = 26;
         numberCount = 5;
-        hasSpecialNumber = true;
       } else if (selectedGame.name.includes('Mega')) {
         mainNumbersMax = 70;
-        specialNumberMax = 25;
         numberCount = 5;
-        hasSpecialNumber = true;
       } else if (selectedGame.name.includes('Cash4Life')) {
         mainNumbersMax = 60;
-        specialNumberMax = 4;
         numberCount = 5;
-        hasSpecialNumber = true;
       } else if (selectedGame.name.includes('Take 5')) {
         mainNumbersMax = 39;
         numberCount = 5;
@@ -189,12 +297,56 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
     mainNumbers.sort((a, b) => a - b);
     setNumbers(mainNumbers);
     
-    if (hasSpecialNumber && specialNumberMax > 0) {
-      // Generate special number (could be the same as one of the main numbers)
-      const special = Math.floor(Math.random() * specialNumberMax) + 1;
-      setSpecialNumber(special);
-    } else {
-      setSpecialNumber(null);
+    // We should not assume which games have special numbers - follow the API response pattern
+    // If we're in the random generator, we should check if the most recent API call had a special number
+    
+    // Default to no special number
+    setSpecialNumber(null);
+  };
+
+  // Função para salvar predição no backend
+  const handleSavePrediction = async () => {
+    
+    // Verify game is selected
+    if (!selectedGame) {
+      showToast('No game selected!', { type: 'error' });
+      return;
+    }
+
+    // Verify game ID is valid
+    if (!selectedGame.id) {
+      showToast('Invalid game ID!', { type: 'error' });
+      return;
+    }
+    
+    setSaving(true);
+    
+    try {
+      // Just directly send the data from the generated prediction
+      await predictionService.savePredictionToBackend({
+        game_id: selectedGame.id,
+        state_id: selectedGame.states?.[0]?.id,
+        predicted_numbers: generatedPrediction ? generatedPrediction.numbers : numbers.join(', '),
+        predicted_special_number: generatedPrediction ? generatedPrediction.special_number : (specialNumber !== null ? String(specialNumber) : null),
+        confidence_score: generatedPrediction ? generatedPrediction.confidence : (aiConfidence || 50.0),
+        analysis_summary: generatedPrediction ? (generatedPrediction.summary || `Smart Pick for ${selectedGame.name}`) : `Smart Pick for ${selectedGame.name}`,
+        hot_numbers: generatedPrediction?.analysis_data?.hot_numbers || '',
+        cold_numbers: generatedPrediction?.analysis_data?.cold_numbers || '',
+        overdue_numbers: generatedPrediction?.analysis_data?.overdue_numbers || ''
+      });
+      
+      showToast('Prediction saved successfully!', { type: 'success' });
+    } catch (error) {
+      console.error("Error saving prediction:", error);
+      
+      // Display the exact error message from the backend if available
+      if (error instanceof Error) {
+        showToast(error.message, { type: 'error' });
+      } else {
+        showToast('Failed to save prediction!', { type: 'error' });
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -213,6 +365,65 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
     );
   }
 
+  // Exibir mensagem de carregamento durante a geração com efeitos visuais atraentes
+  if (isGenerating && loadingMessage) {
+    return (
+      <Card className="flex flex-col items-center justify-center min-h-[260px] p-8 text-center relative overflow-hidden bg-gradient-to-br from-[#1A1D23] to-[#151821] border border-[#2A2F38]">
+        {/* Efeito de fundo pulsante */}
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-accent/0 to-accent/5 animate-pulse-slow"></div>
+        
+        {/* Círculos animados ao redor */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32">
+          <div className="absolute inset-0 border-2 border-accent/10 rounded-full animate-ping-slow opacity-30"></div>
+          <div className="absolute inset-0 border-2 border-accent/20 rounded-full animate-ping opacity-20" style={{animationDuration: '3s', animationDelay: '0.5s'}}></div>
+          <div className="absolute inset-0 border border-accent/30 rounded-full animate-ping opacity-10" style={{animationDuration: '4s', animationDelay: '1s'}}></div>
+        </div>
+        
+        {/* Ícone do cérebro com brilho pulsante */}
+        <div className="relative z-10 mb-16">
+          <div className="absolute -inset-1 bg-accent/20 rounded-full blur-lg animate-pulse"></div>
+          <div className="relative bg-gradient-to-br from-accent to-accent/70 p-4 rounded-full shadow-lg shadow-accent/20">
+            <Brain size={40} className="text-white" />
+          </div>
+        </div>
+        
+        {/* Container para mensagens com transição */}
+        <div className="relative z-10 h-20 w-full">
+          {loadingMessages.map((message, index) => (
+            <FadeMessage 
+              key={index} 
+              message={message} 
+              isActive={messageStep === index} 
+            />
+          ))}
+        </div>
+        
+        {/* Indicador de progresso com animação suave */}
+        <div className="w-64 h-2 bg-[#2A2F38] rounded-full relative mb-3 z-10 mt-6">
+          <div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-accent/80 to-accent rounded-full"
+            style={{
+              width: `${progress}%`,
+              transition: 'width 0.3s ease-out'
+            }}
+          ></div>
+        </div>
+        
+        {/* Tempo estimado */}
+        <span className="text-text-muted text-xs mb-3 z-10">
+          {progress < 100 
+            ? `AI analysis in progress... ${Math.round(progress)}%` 
+            : 'Finalizing results...'}
+        </span>
+        
+        {/* Pequenos elementos decorativos */}
+        <div className="absolute bottom-2 right-2 w-2 h-2 bg-accent rounded-full animate-ping opacity-70"></div>
+        <div className="absolute top-4 left-4 w-1.5 h-1.5 bg-accent rounded-full animate-ping opacity-50" style={{animationDuration: '2.5s'}}></div>
+        <div className="absolute bottom-5 left-6 w-1 h-1 bg-accent rounded-full animate-ping opacity-30" style={{animationDuration: '3s'}}></div>
+      </Card>
+    );
+  }
+
   return (
     <Card className={isMobile ? 'relative bg-[#1A1D23] rounded-xl p-4 mb-3 border border-[#2A2F38]' : 'mb-0 relative bg-[#1A1D23] p-8 border border-[#2A2F38] shadow-xl'}>
       {!isGenerating ? (
@@ -223,21 +434,75 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
             </div>
           </div>
           <div className="text-center mb-4 lg:mb-8">
-            <h3 className={isMobile ? 'text-text font-bold text-lg mb-4' : 'text-text font-bold text-2xl mb-8'}>Your Smart Numbers</h3>
             {hasGenerated && numbers.length > 0 ? (
               <>
+                {/* Game Header with Logo and Info */}
+                <div className={`${isMobile ? 'flex flex-col sm:flex-row items-center gap-3 mb-4' : 'flex items-center justify-center gap-6 mb-8'}`}>
+                  {/* Circular Game Logo */}
+                  <div className="relative">
+                    <div className="absolute inset-0 scale-110 bg-accent/20 rounded-full blur-lg"></div>
+                    <div className={`relative ${isMobile ? 'w-20 h-20' : 'w-32 h-32'} rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center overflow-hidden`}>
+                      {selectedGame?.logo_url ? (
+                        <img
+                          src={selectedGame.logo_url}
+                          alt={selectedGame.name}
+                          className="w-full h-full object-scale-down p-2"
+                          onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span className="text-accent font-bold text-2xl">{selectedGame?.name.substring(0, 2)}</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Game Info */}
+                  <div className={isMobile ? 'text-center' : 'text-left'}>
+                    <h3 className={isMobile ? 'text-text font-bold text-base' : 'text-text font-bold text-2xl'}>
+                      {selectedGame?.name}
+                    </h3>
+                    {/* Always show jackpot section, with fallback text when not available */}
+                    <div className={`flex ${isMobile ? 'justify-center' : ''} items-center gap-2 mt-1`}>
+                      <div className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${
+                        selectedGame?.results && selectedGame.results[0]?.next_jackpot 
+                          ? 'bg-accent/10 text-accent' 
+                          : 'bg-gray-700/30 text-gray-400'
+                      }`}>
+                        {selectedGame?.results && selectedGame.results[0]?.next_jackpot 
+                          ? selectedGame.results[0].next_jackpot 
+                          : 'Not Estimated'}
+                      </div>
+                      <span className="text-text-muted text-xs">Next Jackpot</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <h3 className={isMobile ? 'text-text font-bold text-lg mb-4' : 'text-text font-bold text-xl mb-6'}>Your Smart Numbers</h3>
+                
                 <div className={isMobile ? 'flex justify-center gap-2 flex-wrap mb-2' : 'flex justify-center gap-4 flex-wrap'}>
-                  {numbers.map((num, i) => (
+                  {/* First display regular numbers */}
+                  {numbers
+                    .filter(num => specialNumber === null || num !== specialNumber)
+                    .map((num, i) => (
+                      <SmartPickLotteryBall
+                        key={i}
+                        number={num}
+                        isSpecial={false}
+                        size={isMobile ? 'lg' : 'xl'}
+                      />
+                    ))}
+                  
+                  {/* Then display the special number last, if it exists */}
+                  {specialNumber !== null && (
                     <SmartPickLotteryBall
-                      key={i}
-                      number={num}
-                      isSpecial={specialNumber !== null && num === specialNumber}
+                      key="special"
+                      number={specialNumber}
+                      isSpecial={true}
                       size={isMobile ? 'lg' : 'xl'}
                     />
-                  ))}
+                  )}
                 </div>
                 <p className={isMobile ? 'text-text-muted text-xs mt-2' : 'text-text-muted text-lg mt-6'}>
-                  Generated for {selectedGame?.name} - {new Date().toLocaleDateString()}
+                  Generated for {selectedGame?.name} on {new Date().toLocaleDateString()}
                 </p>
               </>
             ) : (
@@ -263,7 +528,10 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
                 <Button
                   variant="outline"
                   className={isMobile ? 'flex flex-col items-center justify-center py-3 text-xs border-accent/30 hover:bg-accent/10 text-accent' : 'flex items-center gap-2 py-4 border-accent/30 hover:bg-accent/10 text-accent'}
-                  onClick={() => navigator.clipboard.writeText(numbers.join(', '))}
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(numbers.join(', '));
+                    showToast('Numbers copied!', { type: 'success' });
+                  }}
                   disabled={!hasGenerated}
                 >
                   <Copy size={isMobile ? 18 : 20} className={isMobile ? 'mb-0.5' : ''} />
@@ -272,45 +540,14 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
                 <Button
                   variant="outline"
                   className={isMobile ? 'flex flex-col items-center justify-center py-3 text-xs border-accent/30 hover:bg-accent/10 text-accent' : 'flex items-center gap-2 py-4 border-accent/30 hover:bg-accent/10 text-accent'}
-                  disabled={!hasGenerated}
-                  onClick={() => {
-                    if (selectedGame && numbers.length > 0) {
-                      const mainNumbers = specialNumber !== null 
-                        ? numbers.filter(num => num !== specialNumber) 
-                        : numbers;
-                      
-                      const prediction = {
-                        id: Date.now(),
-                        game_name: selectedGame.name,
-                        state_code: selectedGame.states && selectedGame.states.length > 0 
-                          ? selectedGame.states[0].code 
-                          : '',
-                        numbers: mainNumbers.join(', '),
-                        special_number: specialNumber !== null ? specialNumber.toString() : null,
-                        confidence: 85,
-                        summary: `Smart Pick for ${selectedGame.name}`,
-                        analysis_data: {
-                          hot_numbers: '',
-                          cold_numbers: '',
-                          overdue_numbers: ''
-                        }
-                      };
-                      
-                      predictionService.savePrediction(prediction);
-                    }
-                  }}
+                  disabled={!hasGenerated || saving}
+                  onClick={handleSavePrediction}
                 >
-                  <Save size={isMobile ? 18 : 20} className={isMobile ? 'mb-0.5' : ''} />
-                  <span>Save</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className={isMobile ? 'flex flex-col items-center justify-center py-3 text-xs border-accent/30 hover:bg-accent/10 text-accent' : 'flex items-center gap-2 py-4 border-accent/30 hover:bg-accent/10 text-accent'}
-                  onClick={handleGenerateNumbers}
-                  disabled={!hasGenerated}
-                >
-                  <RefreshCw size={isMobile ? 18 : 20} className={isMobile ? 'mb-0.5' : ''} />
-                  <span>New Set</span>
+                  {saving ? (
+                    <span className="flex items-center gap-2"><RefreshCw className="animate-spin" size={isMobile ? 18 : 20} />Saving...</span>
+                  ) : (
+                    <><Save size={isMobile ? 18 : 20} className={isMobile ? 'mb-0.5' : ''} /><span>Save</span></>
+                  )}
                 </Button>
               </div>
               

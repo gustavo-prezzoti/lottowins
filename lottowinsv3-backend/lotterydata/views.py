@@ -17,6 +17,8 @@ import logging
 import random
 from datetime import datetime
 from collections import Counter
+from django.utils import timezone
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -855,6 +857,133 @@ class GamePredictionViewSet(viewsets.ModelViewSet):
             'confidence_score': round(confidence_score, 1),
             'analysis_summary': analysis_summary
         }
+
+    @swagger_auto_schema(
+        operation_description="Gerar predição de IA para um jogo e estado (não salva)",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'game_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'state_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+            },
+            required=['game_id', 'state_id']
+        ),
+        responses={200: SimplifiedGamePredictionSerializer()}
+    )
+    @action(detail=False, methods=['post'], url_path='generate')
+    def generate_prediction(self, request):
+        """
+        Gera uma predição de IA para um jogo e estado, sem salvar no banco.
+        """
+        game_id = request.data.get('game_id')
+        state_id = request.data.get('state_id')
+        if not game_id or not state_id:
+            return Response({"error": "game_id e state_id são obrigatórios."}, status=400)
+        try:
+            game = Game.objects.get(pk=game_id)
+            state = State.objects.get(pk=state_id)
+        except Game.DoesNotExist:
+            return Response({"error": f"Game com id {game_id} não encontrado."}, status=404)
+        except State.DoesNotExist:
+            return Response({"error": f"State com id {state_id} não encontrado."}, status=404)
+        # Buscar resultados históricos
+        query = '''
+            SELECT * FROM game_results WHERE game_id = %s ORDER BY collected_at DESC
+        '''
+        historical_results = []
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query, [game_id])
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+            for row in rows:
+                historical_results.append(type('GameResult', (), dict(zip(columns, row))))
+        # Gerar predição
+        prediction = self.perform_ai_analysis(historical_results, game, state)
+        # Montar resposta
+        return Response({
+            "game_id": game_id,
+            "state_id": state_id,
+            "predicted_numbers": prediction.get('predicted_numbers'),
+            "predicted_special_number": prediction.get('predicted_special_number'),
+            "confidence_score": prediction.get('confidence_score'),
+            "analysis_summary": prediction.get('analysis_summary'),
+            "hot_numbers": prediction.get('hot_numbers'),
+            "cold_numbers": prediction.get('cold_numbers'),
+            "overdue_numbers": prediction.get('overdue_numbers'),
+        })
+
+    @swagger_auto_schema(
+        operation_description="Salvar uma predição gerada pela IA para o usuário autenticado",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'game_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'state_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'predicted_numbers': openapi.Schema(type=openapi.TYPE_STRING),
+                'predicted_special_number': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                'confidence_score': openapi.Schema(type=openapi.TYPE_NUMBER),
+                'analysis_summary': openapi.Schema(type=openapi.TYPE_STRING),
+                'hot_numbers': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                'cold_numbers': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                'overdue_numbers': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+            },
+            required=['game_id', 'state_id', 'predicted_numbers', 'confidence_score', 'analysis_summary']
+        ),
+        responses={201: GamePredictionSerializer()}
+    )
+    @action(detail=False, methods=['post'], url_path='save')
+    def save_prediction(self, request):
+        """
+        Salva uma predição gerada pela IA para o usuário autenticado.
+        Se já existir uma predição igual para o mesmo jogo/estado/usuário nas últimas 24h, não salva e retorna aviso.
+        Se for antiga, permite salvar nova.
+        """
+        from .models import GamePrediction
+        data = request.data
+        required_fields = ['game_id', 'state_id', 'predicted_numbers', 'confidence_score', 'analysis_summary']
+        for field in required_fields:
+            if not data.get(field):
+                return Response({"error": f"Campo obrigatório: {field}"}, status=400)
+        try:
+            game = Game.objects.get(pk=data['game_id'])
+            state = State.objects.get(pk=data['state_id'])
+        except Game.DoesNotExist:
+            return Response({"error": f"Game com id {data['game_id']} não encontrado."}, status=404)
+        except State.DoesNotExist:
+            return Response({"error": f"State com id {data['state_id']} não encontrado."}, status=404)
+        # Verificar se já existe predição igual nas últimas 24h
+        now = timezone.now()
+        last_24h = now - timedelta(hours=24)
+        existing = GamePrediction.objects.filter(
+            game=game,
+            state=state,
+            user=request.user,
+            predicted_numbers=data['predicted_numbers'],
+            predicted_special_number=data.get('predicted_special_number'),
+            confidence_score=data['confidence_score'],
+            analysis_summary=data['analysis_summary'],
+            created_at__gte=last_24h
+        ).first()
+        if existing:
+            return Response({
+                "message": "You have already saved this prediction."
+            }, status=400)
+        # Salvar nova predição
+        prediction = GamePrediction.objects.create(
+            game=game,
+            state=state,
+            user=request.user,
+            predicted_numbers=data['predicted_numbers'],
+            predicted_special_number=data.get('predicted_special_number'),
+            confidence_score=data['confidence_score'],
+            analysis_summary=data['analysis_summary'],
+            hot_numbers=data.get('hot_numbers'),
+            cold_numbers=data.get('cold_numbers'),
+            overdue_numbers=data.get('overdue_numbers'),
+        )
+        serializer = GamePredictionSerializer(prediction)
+        return Response(serializer.data, status=201)
 
 @swagger_auto_schema(
     method='get',

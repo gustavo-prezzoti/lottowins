@@ -347,8 +347,6 @@ const FrequencyAnalysis: React.FC<{
 // Função para formatar a data corretamente
 const formatPredictionDate = (dateString: string | number) => {
   try {
-    // For debugging
-    console.log("Formatting date:", dateString, typeof dateString);
     
     // Se for uma string de data
     if (typeof dateString === 'string') {
@@ -405,9 +403,7 @@ const SmartPicksTab: React.FC<{
         if (response.success) {
           // Map API response to include created_at field
           const mappedPredictions = response.predictions.map(prediction => {
-            // Log for debugging
-            console.log("Original prediction:", prediction);
-            
+
             return {
               ...prediction,
               // Make sure created_at is properly mapped from the API response
@@ -713,10 +709,6 @@ const LotteryDetailScreen: React.FC = () => {
         
         const gameData = await gameService.getGameById(parseInt(id, 10));
         
-        console.log("Game data:", gameData);
-        console.log("Game results:", gameData?.results);
-        console.log("Results array type:", Array.isArray(gameData?.results));
-        console.log("Results length:", gameData?.results?.length);
         
         setGame(gameData);
         setError(null);
@@ -844,10 +836,6 @@ const LotteryDetailScreen: React.FC = () => {
         // Check if results array exists and has items
         const hasResults = Array.isArray(game.results) && game.results.length > 0;
         
-        console.log("Rendering results tab:");
-        console.log("Game:", game);
-        console.log("Has results:", hasResults);
-        console.log("Results array:", game.results);
         
         if (!hasResults) {
           return (

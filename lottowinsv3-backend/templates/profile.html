@@ -69,9 +69,15 @@
             <p><strong>Email:</strong> {{ user.email }}</p>
         </div>
         <a href="/accounts/password_change/" class="button">Trocar Senha</a>
+        <a href="/swagger/" class="button">Documentação da API (Swagger)</a>
+        {% if user.is_staff %}
+        <a href="/admin/" class="button">Painel de Administração</a>
+        {% endif %}
         <div class="links">
-            <a href="/swagger/">Ir para a documentação (Swagger)</a> |
-            <a href="/accounts/logout/">Sair</a>
+            <form action="/accounts/logout/" method="post" style="display: inline-block;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: #ffb347; text-decoration: underline; cursor: pointer; font-size: 1.1rem;">Sair</button>
+            </form>
         </div>
     </div>
 </body>

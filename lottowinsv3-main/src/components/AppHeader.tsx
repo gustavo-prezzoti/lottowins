@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { useAuth } from '../contexts/AuthContext';
@@ -18,7 +18,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const navigate = useNavigate();
   const { isMobile } = useWindowSize();
   const { user } = useAuth();
-  console.log('AppHeader user:', user);
   
   return (
     <header className="bg-primary sticky top-0 z-20 border-b border-white/10">
@@ -33,7 +32,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 <ArrowLeft size={24} />
               </button>
             )}
-            <h1 className="text-white font-bold text-xl">{title}</h1>
+            <h1 className={`text-white font-bold ${isMobile ? 'text-sm max-w-[80px] truncate' : 'text-xl'}`}>{title}</h1>
+          </div>
+
+          {/* Center logo */}
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <img 
+              src="/logo-menu.png" 
+              alt="Lotto Wins" 
+              className={isMobile ? "h-10" : "h-14"}
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}
+            />
           </div>
           
           {rightElement ? (

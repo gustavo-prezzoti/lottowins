@@ -37,7 +37,6 @@ class StateGame(models.Model):
 
 class GameResult(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='results')
-    state = models.ForeignKey(State, on_delete=models.CASCADE)
     draw_date = models.CharField(max_length=20)
     draw_time = models.TimeField(null=True, blank=True)
     numbers = models.CharField(max_length=255)

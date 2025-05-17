@@ -18,8 +18,8 @@ class StateGameAdmin(admin.ModelAdmin):
 
 @admin.register(GameResult)
 class GameResultAdmin(admin.ModelAdmin):
-    list_display = ('game', 'state', 'draw_date', 'numbers', 'collected_at')
-    list_filter = ('game', 'state')
+    list_display = ('game', 'draw_date', 'numbers', 'collected_at')
+    list_filter = ('game',)
     search_fields = ('draw_date', 'numbers')
 
 @admin.register(CollectionLog)

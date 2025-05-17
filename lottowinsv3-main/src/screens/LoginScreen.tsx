@@ -101,7 +101,12 @@ const LoginScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-primary flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 shadow-xl">
-        <div className="text-center mb-8">
+        <div className="flex flex-col items-center mb-8">
+          <img 
+            src="/logo-login.png" 
+            alt="Lotto Wins" 
+            className="h-32 mb-6" 
+          />
           <h1 className="text-3xl font-bold text-text-dark mb-2">Lotto Wins</h1>
           <p className="text-text-muted">Sign in to your account</p>
         </div>

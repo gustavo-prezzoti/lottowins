@@ -26,7 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger('historical_collector')
 
 # Configurações do coletor
-MAX_DAYS_BACK = 3   # Reduzido para apenas 3 dias para testes
+MAX_DAYS_BACK = 30   # Valor padrão de 30 dias para coleta de dados históricos
 MAX_EMPTY_DAYS = 3   # Número máximo de dias consecutivos sem dados para considerar que acabaram os resultados
 BATCH_SIZE = 10      # Número de estados processados por lote
 PAUSE_BETWEEN_DAYS = 1.0  # Pausa entre dias (reduzida pois salvaremos tudo de uma vez)

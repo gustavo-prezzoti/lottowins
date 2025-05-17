@@ -67,7 +67,6 @@ const LotteriesScreen: React.FC = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const stateParam = queryParams.get('state');
-    console.log("URL state param:", stateParam);
     
     if (stateParam) {
       setSelectedState(stateParam);

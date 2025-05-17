@@ -114,8 +114,6 @@ const USMap: React.FC<USMapProps> = ({ navigateTo = 'states' }) => {
   }, [states]);
 
   const handleStateClick = (stateAbbr: string, stateName: string) => {
-    // Use full state name for a better experience
-    console.log(`Clicking on state: ${stateAbbr} - ${stateName}`);
     
     // Ensure we pass the exact name as it appears in the API
     const exactState = states.find(s => s.code.toUpperCase() === stateAbbr);
@@ -126,7 +124,6 @@ const USMap: React.FC<USMapProps> = ({ navigateTo = 'states' }) => {
     } else {
       // Navigate to states with state name
       if (exactState) {
-        console.log("Found exact state name:", exactState.name);
         navigate(`/states?state=${encodeURIComponent(exactState.name)}`);
       } else {
         // Fallback to provided name
