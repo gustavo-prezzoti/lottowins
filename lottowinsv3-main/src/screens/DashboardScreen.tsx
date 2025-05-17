@@ -14,7 +14,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Game } from '../services/gameService';
+import { Game, GameResult } from '../services/gameService';
 
 // Helper function to parse numbers string into array
 const parseNumbers = (numbersString: string): number[] => {
@@ -182,7 +182,15 @@ const DashboardScreen: React.FC = () => {
             </Button>
           </div>
           <div className="bg-[#181c22] p-3 rounded-lg border border-[#333] shadow-lg w-full">
-            {isMobile ? (
+            {gamesLoading ? (
+              <div className="py-8 space-y-6">
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute animate-ping w-10 h-10 rounded-full bg-accent/20"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+                </div>
+                <p className="text-center text-text-muted text-sm">Loading lottery games...</p>
+              </div>
+            ) : (
               <div className="flex flex-col gap-3">
                 {uniqueGames.slice(0, 12).map(game => (
                   <div
@@ -267,137 +275,6 @@ const DashboardScreen: React.FC = () => {
                   </div>
                 ))}
               </div>
-            ) : (
-              <>
-                <Swiper
-                  modules={[Pagination, Autoplay]}
-                  spaceBetween={24}
-                  slidesPerView={1}
-                  breakpoints={{
-                    640: { slidesPerView: 1 },
-                    768: { slidesPerView: 2 },
-                    1024: { slidesPerView: 3 },
-                  }}
-                  pagination={{
-                    clickable: true,
-                    el: '.custom-swiper-pagination',
-                    bulletClass: 'custom-swiper-bullet',
-                    bulletActiveClass: 'custom-swiper-bullet-active',
-                  }}
-                  autoplay={{ delay: 3500, disableOnInteraction: false }}
-                  className="w-full"
-                >
-                  {uniqueGames.slice(0, 12).map(game => (
-                    <SwiperSlide key={game.id}>
-                      <div
-                        className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
-                        style={{ minHeight: '320px' }}
-                      >
-                        {/* Glow effect behind logo */}
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-0 w-24 h-24 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
-                        {/* Logo retangular arredondada */}
-                        <div className="w-20 h-12 rounded-xl bg-[#23272f] flex items-center justify-center shadow-lg mb-2 border-2 border-[#23272f] group-hover:border-accent/60 transition-all duration-300 relative z-10">
-                          {game.logo_url ? (
-                            <img
-                              src={game.logo_url}
-                              alt={game.name}
-                              className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
-                              onError={e => { e.currentTarget.style.display = 'none'; }}
-                            />
-                          ) : (
-                            <span className="text-accent font-bold text-lg drop-shadow">{game.name.substring(0, 2)}</span>
-                          )}
-                        </div>
-                        {/* Nome do jogo */}
-                        <div className="text-center w-full mb-1">
-                          <span className="block font-semibold text-white text-base md:text-lg truncate drop-shadow-sm tracking-wide">
-                            {game.name}
-                          </span>
-                        </div>
-                        {/* Jackpot */}
-                        <div className="flex justify-center mb-2">
-                          <span className="px-3 py-1 rounded-full bg-gradient-to-r from-accent/80 to-accent/60 text-white font-bold text-sm shadow-accent/30 shadow-md border border-accent/30 animate-pulse-slow">
-                            {game.results[0]?.next_jackpot || 'Jackpot TBD'}
-                          </span>
-                        </div>
-                        {/* Números sorteados */}
-                        {game.results[0] && (
-                          <div 
-                            className={`flex flex-wrap justify-center ${
-                              hasVeryLargeNumberSet(game) 
-                                ? 'gap-0.5 grid grid-cols-4 w-full' 
-                                : hasLargeNumberSet(game) 
-                                  ? 'gap-1 mx-auto' 
-                                  : 'gap-2'
-                            } mb-2`}
-                          >
-                            {parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
-                              const hasManyNumbers = arr.length > 6;
-                              const hasVeryManyNumbers = arr.length > 10;
-                              const specialNumber = getSpecialNumber(game.results[0]);
-                              
-                              // Usar tamanho apropriado para as bolinhas de números
-                              const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
-                              
-                              // Check if this number is the special number
-                              const isSpecial = specialNumber !== null && num === specialNumber;
-                              
-                              return (
-                                <div key={idx} className="drop-shadow-lg flex justify-center">
-                                  <LotteryNumberBall
-                                    number={num}
-                                    isSpecial={isSpecial}
-                                    size={ballSize}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                        {/* Data do sorteio */}
-                        {game.results[0] && (
-                          <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
-                            <Calendar size={12} />
-                            <span>{formatDate(game.results[0].draw_date)}</span>
-                          </div>
-                        )}
-                        {/* Botão de detalhes */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          fullWidth
-                          className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-2"
-                          onClick={() => navigate(`/lottery/games/${game.id}`)}
-                        >
-                          <span>View Details</span>
-                          <ChevronRight size={16} />
-                        </Button>
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-                <div className="custom-swiper-pagination flex justify-center mt-10 w-full" />
-                {/* Custom Swiper bullets */}
-                <style>{`
-                  .custom-swiper-bullet {
-                    display: inline-block;
-                    width: 12px;
-                    height: 12px;
-                    margin: 0 6px;
-                    border-radius: 9999px;
-                    background: #23272f;
-                    border: 2px solid #444;
-                    opacity: 0.5;
-                    transition: all 0.3s;
-                  }
-                  .custom-swiper-bullet-active {
-                    background: #ff2222;
-                    border: 2px solid #ff2222;
-                    opacity: 1;
-                    box-shadow: 0 0 8px #ff222299;
-                  }
-                `}</style>
-              </>
             )}
           </div>
         </section>
@@ -565,136 +442,148 @@ const DashboardScreen: React.FC = () => {
                 </div>
                 
                 <div className="bg-[#181c22] p-6 rounded-lg border border-[#333] shadow-lg w-full">
-                  <div className="pb-8">
-                  <Swiper
-                    modules={[Pagination, Autoplay]}
-                    spaceBetween={24}
-                    slidesPerView={1}
-                    breakpoints={{
-                      640: { slidesPerView: 1 },
-                      768: { slidesPerView: 2 },
-                      1024: { slidesPerView: 3 },
-                    }}
-                    pagination={{
-                      clickable: true,
-                      el: '.custom-swiper-pagination',
-                      bulletClass: 'custom-swiper-bullet',
-                      bulletActiveClass: 'custom-swiper-bullet-active',
-                    }}
-                    autoplay={{ delay: 3500, disableOnInteraction: false }}
-                    className="w-full"
-                  >
-                    {uniqueGames.slice(0, 12).map(game => (
-                      <SwiperSlide key={game.id}>
-                        <div
-                          className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
-                          style={{ minHeight: '320px' }}
-                        >
-                          {/* Glow effect behind logo */}
-                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-0 w-24 h-24 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
-                          {/* Logo retangular arredondada */}
-                          <div className="w-20 h-12 rounded-xl bg-[#23272f] flex items-center justify-center shadow-lg mb-2 border-2 border-[#23272f] group-hover:border-accent/60 transition-all duration-300 relative z-10">
-                            {game.logo_url ? (
-                              <img
-                                src={game.logo_url}
-                                alt={game.name}
-                                className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
-                                onError={e => { e.currentTarget.style.display = 'none'; }}
-                              />
-                            ) : (
-                              <span className="text-accent font-bold text-lg drop-shadow">{game.name.substring(0, 2)}</span>
-                            )}
-                          </div>
-                          {/* Nome do jogo */}
-                          <div className="text-center w-full mb-1">
-                            <span className="block font-semibold text-white text-base md:text-lg truncate drop-shadow-sm tracking-wide">
-                              {game.name}
-                            </span>
-                          </div>
-                          {/* Jackpot */}
-                          <div className="flex justify-center mb-2">
-                            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-accent/80 to-accent/60 text-white font-bold text-sm shadow-accent/30 shadow-md border border-accent/30 animate-pulse-slow">
-                              {game.results[0]?.next_jackpot || 'Jackpot TBD'}
-                            </span>
-                          </div>
-                          {/* Números sorteados */}
-                          {game.results[0] && (
-                            <div 
-                              className={`flex flex-wrap justify-center ${
-                                hasVeryLargeNumberSet(game) 
-                                  ? 'gap-0.5 grid grid-cols-4 w-full' 
-                                  : hasLargeNumberSet(game) 
-                                    ? 'gap-1 mx-auto' 
-                                    : 'gap-2'
-                              } mb-2`}
+                  {gamesLoading ? (
+                    <div className="py-10 space-y-8">
+                      <div className="relative flex items-center justify-center">
+                        <div className="absolute animate-ping w-16 h-16 rounded-full bg-accent/20"></div>
+                        <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-accent"></div>
+                      </div>
+                      <p className="text-center text-text-muted text-lg">Loading lottery games...</p>
+                      
+ 
+                    </div>
+                  ) : (
+                    <div className="pb-8">
+                      <Swiper
+                        modules={[Pagination, Autoplay]}
+                        spaceBetween={24}
+                        slidesPerView={1}
+                        breakpoints={{
+                          640: { slidesPerView: 1 },
+                          768: { slidesPerView: 2 },
+                          1024: { slidesPerView: 3 },
+                        }}
+                        pagination={{
+                          clickable: true,
+                          el: '.custom-swiper-pagination',
+                          bulletClass: 'custom-swiper-bullet',
+                          bulletActiveClass: 'custom-swiper-bullet-active',
+                        }}
+                        autoplay={{ delay: 3500, disableOnInteraction: false }}
+                        className="w-full"
+                      >
+                        {uniqueGames.slice(0, 12).map(game => (
+                          <SwiperSlide key={game.id}>
+                            <div
+                              className={`w-full max-w-xs mx-auto flex-shrink-0 rounded-2xl bg-gradient-to-br from-[#23272f] to-[#181a1e] border border-[#23272f] shadow-xl hover:shadow-2xl hover:border-accent/70 transition-all duration-300 group relative overflow-hidden flex flex-col items-center px-3 ${hasLargeNumberSet(game) ? 'pt-3 pb-2' : 'pt-4 pb-3'}`}
+                              style={{ minHeight: '320px' }}
                             >
-                              {parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
-                                const hasManyNumbers = arr.length > 6;
-                                const hasVeryManyNumbers = arr.length > 10;
-                                const specialNumber = getSpecialNumber(game.results[0]);
-                                
-                                // Usar tamanho apropriado para as bolinhas de números
-                                const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
-                                
-                                // Check if this number is the special number
-                                const isSpecial = specialNumber !== null && num === specialNumber;
-                                
-                                return (
-                                  <div key={idx} className="drop-shadow-lg flex justify-center">
-                                    <LotteryNumberBall
-                                      number={num}
-                                      isSpecial={isSpecial}
-                                      size={ballSize}
-                                    />
-                                  </div>
-                                );
-                              })}
+                              {/* Glow effect behind logo */}
+                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-0 w-24 h-24 bg-accent/20 blur-2xl rounded-full opacity-60 group-hover:opacity-90 transition" />
+                              {/* Logo retangular arredondada */}
+                              <div className="w-20 h-12 rounded-xl bg-[#23272f] flex items-center justify-center shadow-lg mb-2 border-2 border-[#23272f] group-hover:border-accent/60 transition-all duration-300 relative z-10">
+                                {game.logo_url ? (
+                                  <img
+                                    src={game.logo_url}
+                                    alt={game.name}
+                                    className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
+                                    onError={e => { e.currentTarget.style.display = 'none'; }}
+                                  />
+                                ) : (
+                                  <span className="text-accent font-bold text-lg drop-shadow">{game.name.substring(0, 2)}</span>
+                                )}
+                              </div>
+                              {/* Nome do jogo */}
+                              <div className="text-center w-full mb-1">
+                                <span className="block font-semibold text-white text-base md:text-lg truncate drop-shadow-sm tracking-wide">
+                                  {game.name}
+                                </span>
+                              </div>
+                              {/* Jackpot */}
+                              <div className="flex justify-center mb-2">
+                                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-accent/80 to-accent/60 text-white font-bold text-sm shadow-accent/30 shadow-md border border-accent/30 animate-pulse-slow">
+                                  {game.results[0]?.next_jackpot || 'Jackpot TBD'}
+                                </span>
+                              </div>
+                              {/* Números sorteados */}
+                              {game.results[0] && (
+                                <div 
+                                  className={`flex flex-wrap justify-center ${
+                                    hasVeryLargeNumberSet(game) 
+                                      ? 'gap-0.5 grid grid-cols-4 w-full' 
+                                      : hasLargeNumberSet(game) 
+                                        ? 'gap-1 mx-auto' 
+                                        : 'gap-2'
+                                  } mb-2`}
+                                >
+                                  {parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
+                                    const hasManyNumbers = arr.length > 6;
+                                    const hasVeryManyNumbers = arr.length > 10;
+                                    const specialNumber = getSpecialNumber(game.results[0]);
+                                    
+                                    // Usar tamanho apropriado para as bolinhas de números
+                                    const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
+                                    
+                                    // Check if this number is the special number
+                                    const isSpecial = specialNumber !== null && num === specialNumber;
+                                    
+                                    return (
+                                      <div key={idx} className="drop-shadow-lg flex justify-center">
+                                        <LotteryNumberBall
+                                          number={num}
+                                          isSpecial={isSpecial}
+                                          size={ballSize}
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                              {/* Data do sorteio */}
+                              {game.results[0] && (
+                                <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
+                                  <Calendar size={12} />
+                                  <span>{formatDate(game.results[0].draw_date)}</span>
+                                </div>
+                              )}
+                              {/* Botão de detalhes */}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                fullWidth
+                                className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-2"
+                                onClick={() => navigate(`/lottery/games/${game.id}`)}
+                              >
+                                <span>View Details</span>
+                                <ChevronRight size={16} />
+                              </Button>
                             </div>
-                          )}
-                          {/* Data do sorteio */}
-                          {game.results[0] && (
-                            <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
-                              <Calendar size={12} />
-                              <span>{formatDate(game.results[0].draw_date)}</span>
-                            </div>
-                          )}
-                          {/* Botão de detalhes */}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            fullWidth
-                            className="flex items-center justify-center gap-1 bg-white/5 backdrop-blur border border-accent/30 group-hover:bg-accent/20 group-hover:text-white text-accent font-semibold shadow-md transition-all duration-300 mt-2"
-                            onClick={() => navigate(`/lottery/games/${game.id}`)}
-                          >
-                            <span>View Details</span>
-                            <ChevronRight size={16} />
-                          </Button>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                  <div className="custom-swiper-pagination flex justify-center mt-10 w-full" />
-                  {/* Custom Swiper bullets */}
-                  <style>{`
-                    .custom-swiper-bullet {
-                      display: inline-block;
-                      width: 12px;
-                      height: 12px;
-                      margin: 0 6px;
-                      border-radius: 9999px;
-                      background: #23272f;
-                      border: 2px solid #444;
-                      opacity: 0.5;
-                      transition: all 0.3s;
-                    }
-                    .custom-swiper-bullet-active {
-                      background: #ff2222;
-                      border: 2px solid #ff2222;
-                      opacity: 1;
-                      box-shadow: 0 0 8px #ff222299;
-                    }
-                  `}</style>
-                  </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                      <div className="custom-swiper-pagination flex justify-center mt-10 w-full" />
+                      {/* Custom Swiper bullets */}
+                      <style>{`
+                        .custom-swiper-bullet {
+                          display: inline-block;
+                          width: 12px;
+                          height: 12px;
+                          margin: 0 6px;
+                          border-radius: 9999px;
+                          background: #23272f;
+                          border: 2px solid #444;
+                          opacity: 0.5;
+                          transition: all 0.3s;
+                        }
+                        .custom-swiper-bullet-active {
+                          background: #ff2222;
+                          border: 2px solid #ff2222;
+                          opacity: 1;
+                          box-shadow: 0 0 8px #ff222299;
+                        }
+                      `}</style>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

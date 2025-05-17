@@ -101,14 +101,20 @@ const GamesWithResults: React.FC<GamesWithResultsProps> = ({
                     {/* Top: Logo + Nome + Jackpot */}
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-8 h-8 bg-[#2a2f3a] rounded-lg flex items-center justify-center overflow-hidden">
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-md">
                           {game.logo_url ? (
                             <img 
                               src={game.logo_url} 
                               alt={game.name} 
-                              className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
+                              className="w-full h-full object-contain p-0.5"
                               onError={(e) => {
-                                e.currentTarget.style.display = 'none';
+                                const target = e.currentTarget;
+                                target.onerror = null; // Prevent infinite loop
+                                target.style.display = 'none';
+                                // Show initials as fallback
+                                if (target.parentElement) {
+                                  target.parentElement.innerHTML = `<div class="text-accent font-bold text-base">${game.name.substring(0, 2)}</div>`;
+                                }
                               }}
                             />
                           ) : (
@@ -147,18 +153,24 @@ const GamesWithResults: React.FC<GamesWithResultsProps> = ({
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     {/* Game Logo and Info */}
                     <div className="flex items-center gap-3 flex-1">
-                      <div className={`w-12 h-12 bg-[#2a2f3a] rounded-lg flex items-center justify-center overflow-hidden`}>
+                      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-md">
                         {game.logo_url ? (
                           <img 
                             src={game.logo_url} 
                             alt={game.name} 
-                            className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto"
+                            className="w-full h-full object-contain p-1"
                             onError={(e) => {
-                              e.currentTarget.style.display = 'none';
+                              const target = e.currentTarget;
+                              target.onerror = null; // Prevent infinite loop
+                              target.style.display = 'none';
+                              // Show initials as fallback
+                              if (target.parentElement) {
+                                target.parentElement.innerHTML = `<div class="text-accent font-bold text-lg">${game.name.substring(0, 2)}</div>`;
+                              }
                             }}
                           />
                         ) : (
-                          <div className={`text-accent font-bold text-lg`}>{game.name.substring(0, 2)}</div>
+                          <div className="text-accent font-bold text-lg">{game.name.substring(0, 2)}</div>
                         )}
                       </div>
                       <div className="flex-1">

@@ -17,6 +17,7 @@ export interface GameResult {
   next_draw_date: string;
   next_draw_time: string;
   next_jackpot: string;
+  special_number: string;
   collected_at: string;
   state_id: number;
   state_code?: string;
