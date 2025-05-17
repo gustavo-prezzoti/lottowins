@@ -162,7 +162,11 @@ const GamesListScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#16181d] pb-10">
       <div className="w-full max-w-[1100px] mx-auto px-2 sm:px-4 pt-10">
-        <h1 className="text-3xl font-bold text-white mb-8 text-center tracking-tight">All Lottery Games</h1>
+        <h1 className="text-3xl font-bold text-center tracking-tight mb-8">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-600">
+            All Lottery Games
+          </span>
+        </h1>
         {/* Filtros e ordenação */}
         <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6 max-w-3xl mx-auto">
           <div className="flex-1 flex items-center gap-2">
@@ -221,7 +225,7 @@ const GamesListScreen: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               {paginatedGames.length === 0 ? (
                 <div className="text-center text-gray-400 py-16 text-lg">
                   {showUpcomingOnly ? (
@@ -259,29 +263,27 @@ const GamesListScreen: React.FC = () => {
                       >
                         {/* Left: Logo + Name + States */}
                         <div className="flex items-center gap-4 min-w-0 flex-1">
-                          <div className="w-20 h-14 object-contain bg-white rounded-lg shadow-md p-1 mx-auto">
-                            {game.logo_url ? (
-                              <img src={game.logo_url} alt={game.name} className="w-10 h-10 object-contain" />
-                            ) : (
-                              <span className="text-accent font-bold text-xl">{game.name.substring(0, 2)}</span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="font-semibold text-white text-lg truncate mb-1 tracking-tight">{game.name}</h3>
-                            <div className="flex flex-wrap gap-2 text-xs text-gray-400">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-white text-xl truncate mb-1.5">{game.name}</h3>
+                            <div className="flex flex-wrap gap-2 text-sm text-gray-400">
                               {game.states && game.states.length > 0 && (
                                 <span className="flex items-center gap-1">
-                                  <MapPin size={13} />{game.states.map(s => s.name).join(', ')}
+                                  <MapPin size={14} />
+                                  <span className="line-clamp-1">{game.states.map(s => s.name).join(', ')}</span>
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
                         {/* Center: Jackpot + Next Draw */}
-                        <div className="flex flex-col items-center md:items-end gap-1 min-w-[120px]">
-                          {latestResult?.next_jackpot && (
+                        <div className="flex flex-col items-center md:items-end gap-1 min-w-[140px]">
+                          {latestResult?.next_jackpot ? (
                             <span className="px-3 py-1 rounded-full bg-gradient-to-r from-accent/80 to-accent/60 text-white font-bold text-base shadow-accent/30 shadow-md border border-accent/30 animate-pulse-slow mb-1">
                               {latestResult.next_jackpot}
+                            </span>
+                          ) : (
+                            <span className="px-3 py-1 rounded-full bg-gray-700/30 text-gray-400 text-sm mb-1">
+                              Not Estimated
                             </span>
                           )}
                           {latestResult?.next_draw_date && (
@@ -297,29 +299,38 @@ const GamesListScreen: React.FC = () => {
                         </div>
                       </div>
                       {isExpanded && (
-                        <div className="px-6 pb-5 pt-2 bg-[#23272f] border-t border-[#23272f]">
-                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-0">
-                            <div className="flex flex-wrap gap-1 items-center">
-                              {latestResult && latestResult.numbers && latestResult.numbers.split(/[,+]/).map((num: string, idx: number, arr: string[]) => (
-                                <LotteryNumberBall
-                                  key={idx}
-                                  number={parseInt(num, 10)}
-                                  isSpecial={idx === arr.length - 1 && arr.length > 1}
-                                  size="sm"
-                                />
-                              ))}
-                              {latestResult?.draw_date && (
-                                <div className="flex items-center gap-2 text-xs text-gray-400 ml-4">
-                                  <Calendar size={13} />
-                                  <span>Last Draw: {formatDate(latestResult.draw_date)}</span>
-                                </div>
+                        <div className="px-6 pb-5 pt-4 bg-[#23272f] border-t border-[#23272f]">
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div className="flex flex-wrap gap-2 items-center">
+                              {latestResult && latestResult.numbers && (
+                                <>
+                                  <div className="flex flex-wrap gap-2 items-center justify-center">
+                                    {latestResult.numbers.split(/[,+]/).map((num: string, idx: number, arr: string[]) => (
+                                      <LotteryNumberBall
+                                        key={idx}
+                                        number={parseInt(num, 10)}
+                                        isSpecial={idx === arr.length - 1 && arr.length > 1}
+                                        size="sm"
+                                      />
+                                    ))}
+                                  </div>
+                                  {latestResult?.draw_date && (
+                                    <div className="flex items-center gap-2 text-xs text-gray-400 ml-2">
+                                      <Calendar size={13} />
+                                      <span>Last Draw: {formatDate(latestResult.draw_date)}</span>
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </div>
                             <div className="flex md:justify-end md:items-center w-full md:w-auto mt-4 md:mt-0">
                               <Button
                                 variant="outline"
                                 className="flex items-center gap-2 px-6 py-2 rounded-lg border-accent text-accent font-semibold hover:bg-accent/20 hover:text-white transition text-base shadow-md md:ml-auto md:w-auto w-full md:max-w-xs max-w-full"
-                                onClick={() => navigate(`/lottery/games/${game.id}`)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/lottery/games/${game.id}`);
+                                }}
                               >
                                 Details <ChevronRight size={18} />
                               </Button>

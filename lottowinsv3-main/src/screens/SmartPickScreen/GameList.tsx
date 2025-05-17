@@ -230,15 +230,15 @@ const GameList: React.FC<GameListProps> = ({
                       </span>
                     )}
                     {/* Always show jackpot, use "Not Estimated" when not available */}
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                      selectedLottery === game.slug 
-                        ? 'bg-white/20 text-white' 
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                        selectedLottery === game.slug 
+                          ? 'bg-white/20 text-white' 
                         : game.results[0]?.next_jackpot 
                           ? 'bg-accent/10 text-accent'
                           : 'bg-gray-700/30 text-gray-400'
-                    }`}>
+                      }`}>
                       {game.results[0]?.next_jackpot || 'Not Estimated'}
-                    </span>
+                      </span>
                     {game.states && game.states.length > 0 && (
                       <span className="flex items-center gap-1">
                         <MapPin size={12} />
