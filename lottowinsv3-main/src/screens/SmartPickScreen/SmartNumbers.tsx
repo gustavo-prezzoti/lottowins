@@ -472,7 +472,7 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
                 <div className={isMobile ? 'flex justify-center gap-2 flex-wrap mb-2' : 'flex justify-center gap-4 flex-wrap'}>
                   {/* First display regular numbers */}
                   {numbers
-                    .filter(num => specialNumber === null || num !== specialNumber)
+                    .slice(0, specialNumber !== null ? numbers.length - 1 : numbers.length)
                     .map((num, i) => (
                       <SmartPickLotteryBall
                         key={i}
@@ -486,7 +486,7 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
                   {specialNumber !== null && (
                     <SmartPickLotteryBall
                       key="special"
-                      number={specialNumber}
+                      number={numbers[numbers.length - 1]}
                       isSpecial={true}
                       size={isMobile ? 'lg' : 'xl'}
                     />
