@@ -172,9 +172,9 @@ const LotteriesScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-primary pb-20">
+    <div className="min-h-screen bg-primary pb-24">
       <main className="max-w-6xl mx-auto w-full px-4 py-12">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <button 
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors"
@@ -182,8 +182,8 @@ const LotteriesScreen: React.FC = () => {
             <ArrowLeft size={24} />
             <span className="text-lg font-medium">Back</span>
           </button>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">All Lotteries</h1>
-          <div className="w-[100px]"></div> {/* Espaço para equilibrar o layout */}
+          <h1 className="text-2xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg text-center md:text-left">All Lotteries</h1>
+          <div className="hidden md:block w-[100px]"></div> {/* Espaço para equilibrar o layout apenas em desktop */}
         </div>
         <div className="flex flex-col gap-4 mb-10 max-w-6xl mx-auto">
           {/* Search, State, and Date filters in one row on desktop */}

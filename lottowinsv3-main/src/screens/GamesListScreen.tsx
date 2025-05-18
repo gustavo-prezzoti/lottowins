@@ -160,7 +160,7 @@ const GamesListScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#16181d] pb-10">
+    <div className="min-h-screen bg-[#16181d] pb-24">
       <div className="w-full max-w-[1100px] mx-auto px-2 sm:px-4 pt-10">
         <h1 className="text-3xl font-bold text-center tracking-tight mb-8">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-600">

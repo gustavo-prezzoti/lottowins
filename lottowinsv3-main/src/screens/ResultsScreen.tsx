@@ -115,7 +115,7 @@ const ResultsScreen: React.FC = () => {
   // Conteúdo principal para ser usado no MainLayout
   return (
     <div className="min-h-screen bg-primary">
-      <main className={isMobile ? 'px-3 py-4' : 'pt-10 pb-16 px-8'}>
+      <main className={isMobile ? 'px-3 py-4 pb-24' : 'pt-10 pb-16 px-8'}>
         <div className="max-w-[1200px] mx-auto w-full">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-text font-semibold text-3xl">Latest Results</h2>

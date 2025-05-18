@@ -226,9 +226,9 @@ const StatesScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#121417] pb-20">
+    <div className="min-h-screen bg-[#121417] pb-24">
       <main className="max-w-7xl mx-auto w-full px-4 py-12">
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
           <button 
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors hover:translate-x-[-5px] transition-transform duration-300"
@@ -236,8 +236,8 @@ const StatesScreen: React.FC = () => {
             <ArrowLeft size={24} />
             <span className="text-lg font-medium">Back</span>
           </button>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-accent/80 tracking-tight">All State Lotteries</h1>
-          <div className="w-[100px]"></div> {/* Espaço para equilibrar o layout */}
+          <h1 className="text-2xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-accent/80 tracking-tight text-center md:text-left">All State Lotteries</h1>
+          <div className="hidden md:block w-[100px]"></div> {/* Espaço para equilibrar o layout apenas em desktop */}
         </div>
         
         <div className="relative mb-12 max-w-lg mx-auto group">
