@@ -65,9 +65,13 @@ const DashboardScreen: React.FC = () => {
           <Card className="bg-gradient-to-r from-accent/20 to-accent/5 border border-accent/20">
             <div className="flex flex-col items-center gap-4 p-4">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-text-dark mb-1">
-                  {nextDraw ? nextDraw.lottery?.name : 'Next Big Draw'}
-                </h1>
+                <div className="flex justify-center items-center mb-2">
+                  <img 
+                    src="/powerball.png" 
+                    alt={nextDraw ? nextDraw.lottery?.name : 'Next Big Draw'}
+                    className="h-12 object-contain"
+                  />
+                </div>
                 <p className="text-text-dark/80 text-sm mb-2">Don't miss your chance to win big!</p>
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <Trophy size={20} className="text-accent" />
@@ -327,9 +331,13 @@ const DashboardScreen: React.FC = () => {
               <div className="p-10">
                 <div className="flex flex-col md:flex-row items-center gap-10">
                   <div className="flex-1">
-                    <h1 className="text-5xl font-bold text-text-dark mb-4">
-                      {nextDraw ? nextDraw.lottery?.name : 'Next Big Draw'}
-                    </h1>
+                    <div className="flex items-center mb-4">
+                      <img 
+                        src="/powerball.png" 
+                        alt={nextDraw ? nextDraw.lottery?.name : 'Next Big Draw'}
+                        className="h-16 object-contain"
+                      />
+                    </div>
                     <p className="text-text-dark/80 mb-8 text-xl">Don't miss your chance to win big with our AI-powered picks!</p>
                     
                     <div className="flex items-center gap-5 mb-10">
