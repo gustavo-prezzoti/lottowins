@@ -135,7 +135,7 @@ const GamesWithResults: React.FC<GamesWithResultsProps> = ({
                             <LotteryNumberBall
                               key={idx}
                               number={num}
-                              isSpecial={idx === numbers.length - 1 && numbers.length > 1}
+                              isSpecial={idx === numbers.length - 1 && numbers.length > 1 && latestResult.special_number !== null}
                               size="sm"
                             />
                           ))}
@@ -202,7 +202,7 @@ const GamesWithResults: React.FC<GamesWithResultsProps> = ({
                               <LotteryNumberBall
                                 key={idx}
                                 number={num}
-                                isSpecial={idx === numbers.length - 1 && numbers.length > 1}
+                                isSpecial={idx === numbers.length - 1 && numbers.length > 1 && latestResult.special_number !== null}
                                 size="sm"
                               />
                             ))}

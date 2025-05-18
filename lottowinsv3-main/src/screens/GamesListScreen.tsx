@@ -309,7 +309,7 @@ const GamesListScreen: React.FC = () => {
                                       <LotteryNumberBall
                                         key={idx}
                                         number={parseInt(num, 10)}
-                                        isSpecial={idx === arr.length - 1 && arr.length > 1}
+                                        isSpecial={idx === arr.length - 1 && arr.length > 1 && latestResult.special_number !== null}
                                         size="sm"
                                       />
                                     ))}

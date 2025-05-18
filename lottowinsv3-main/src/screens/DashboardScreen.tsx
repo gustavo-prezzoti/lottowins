@@ -236,26 +236,75 @@ const DashboardScreen: React.FC = () => {
                           hasVeryLargeNumberSet(game) 
                             ? 'gap-0.5 grid grid-cols-4 w-full' 
                             : hasLargeNumberSet(game) 
-                              ? 'gap-0.5 mx-auto' 
-                              : 'gap-1'
-                        } mb-1`}
+                              ? 'gap-1 mx-auto' 
+                              : 'gap-2'
+                        } mb-2`}
                       >
-                        {parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
-                          const hasManyNumbers = arr.length > 6;
-                          const hasVeryManyNumbers = arr.length > 10;
-                          const specialNumber = getSpecialNumber(game.results[0]);
-                          const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
-                          const isSpecial = specialNumber !== null && num === specialNumber;
-                          return (
-                            <div key={idx} className="drop-shadow-lg flex justify-center">
-                              <LotteryNumberBall
-                                number={num}
-                                isSpecial={isSpecial}
-                                size={ballSize}
-                              />
-                            </div>
-                          );
-                        })}
+                        {/* Para jogos com muitos números, manter a lógica original */}
+                        {hasLargeNumberSet ? (
+                          parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
+                            const hasManyNumbers = arr.length > 6;
+                            const hasVeryManyNumbers = arr.length > 10;
+                            const specialNumber = getSpecialNumber(game.results[0]);
+                            
+                            // Usar tamanho apropriado para as bolinhas de números
+                            const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
+                            
+                            // Check if this number is the special number
+                            const isSpecial = specialNumber !== null && num === specialNumber;
+                            
+                            return (
+                              <div key={idx} className="drop-shadow-lg flex justify-center">
+                                <LotteryNumberBall
+                                  number={num}
+                                  isSpecial={isSpecial}
+                                  size={ballSize}
+                                />
+                              </div>
+                            );
+                          })
+                        ) : (
+                          // Para jogos com poucos números, aplicar a nova lógica
+                          <>
+                            {/* Primeiro exibir números regulares */}
+                            {(() => {
+                              const numbers = parseNumbers(game.results[0].numbers);
+                              const specialNumber = getSpecialNumber(game.results[0]);
+                              
+                              // Preparar array de exibição
+                              let displayNumbers = [...numbers];
+                              if (specialNumber !== null) {
+                                displayNumbers = [...numbers, specialNumber];
+                              }
+                              
+                              return displayNumbers
+                                .slice(0, specialNumber !== null ? displayNumbers.length - 1 : displayNumbers.length)
+                                .map((num, i) => (
+                                  <div key={i} className="drop-shadow-lg flex justify-center">
+                                    <LotteryNumberBall
+                                      number={num}
+                                      isSpecial={false}
+                                      size="md"
+                                    />
+                                  </div>
+                                ));
+                            })()}
+                            
+                            {/* Então exibir o número especial por último, se existir */}
+                            {(() => {
+                              const specialNumber = getSpecialNumber(game.results[0]);
+                              return specialNumber !== null ? (
+                                <div className="drop-shadow-lg flex justify-center">
+                                  <LotteryNumberBall
+                                    number={specialNumber}
+                                    isSpecial={true}
+                                    size="md"
+                                  />
+                                </div>
+                              ) : null;
+                            })()}
+                          </>
+                        )}
                       </div>
                     )}
                     {/* Data do sorteio */}
@@ -524,27 +573,71 @@ const DashboardScreen: React.FC = () => {
                                         : 'gap-2'
                                   } mb-2`}
                                 >
-                                  {parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
-                                    const hasManyNumbers = arr.length > 6;
-                                    const hasVeryManyNumbers = arr.length > 10;
-                                    const specialNumber = getSpecialNumber(game.results[0]);
-                                    
-                                    // Usar tamanho apropriado para as bolinhas de números
-                                    const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
-                                    
-                                    // Check if this number is the special number
-                                    const isSpecial = specialNumber !== null && num === specialNumber;
-                                    
-                                    return (
-                                      <div key={idx} className="drop-shadow-lg flex justify-center">
-                                        <LotteryNumberBall
-                                          number={num}
-                                          isSpecial={isSpecial}
-                                          size={ballSize}
-                                        />
-                                      </div>
-                                    );
-                                  })}
+                                  {/* Para jogos com muitos números, manter a lógica original */}
+                                  {hasLargeNumberSet ? (
+                                    parseNumbers(game.results[0].numbers).map((num, idx, arr) => {
+                                      const hasManyNumbers = arr.length > 6;
+                                      const hasVeryManyNumbers = arr.length > 10;
+                                      const specialNumber = getSpecialNumber(game.results[0]);
+                                      
+                                      // Usar tamanho apropriado para as bolinhas de números
+                                      const ballSize = hasVeryManyNumbers ? "sm" : (hasManyNumbers ? "sm" : "md");
+                                      
+                                      // Check if this number is the special number
+                                      const isSpecial = specialNumber !== null && num === specialNumber;
+                                      
+                                      return (
+                                        <div key={idx} className="drop-shadow-lg flex justify-center">
+                                          <LotteryNumberBall
+                                            number={num}
+                                            isSpecial={isSpecial}
+                                            size={ballSize}
+                                          />
+                                        </div>
+                                      );
+                                    })
+                                  ) : (
+                                    // Para jogos com poucos números, aplicar a nova lógica
+                                    <>
+                                      {/* Primeiro exibir números regulares */}
+                                      {(() => {
+                                        const numbers = parseNumbers(game.results[0].numbers);
+                                        const specialNumber = getSpecialNumber(game.results[0]);
+                                        
+                                        // Preparar array de exibição
+                                        let displayNumbers = [...numbers];
+                                        if (specialNumber !== null) {
+                                          displayNumbers = [...numbers, specialNumber];
+                                        }
+                                        
+                                        return displayNumbers
+                                          .slice(0, specialNumber !== null ? displayNumbers.length - 1 : displayNumbers.length)
+                                          .map((num, i) => (
+                                            <div key={i} className="drop-shadow-lg flex justify-center">
+                                              <LotteryNumberBall
+                                                number={num}
+                                                isSpecial={false}
+                                                size="md"
+                                              />
+                                            </div>
+                                          ));
+                                      })()}
+                                      
+                                      {/* Então exibir o número especial por último, se existir */}
+                                      {(() => {
+                                        const specialNumber = getSpecialNumber(game.results[0]);
+                                        return specialNumber !== null ? (
+                                          <div className="drop-shadow-lg flex justify-center">
+                                            <LotteryNumberBall
+                                              number={specialNumber}
+                                              isSpecial={true}
+                                              size="md"
+                                            />
+                                          </div>
+                                        ) : null;
+                                      })()}
+                                    </>
+                                  )}
                                 </div>
                               )}
                               {/* Data do sorteio */}

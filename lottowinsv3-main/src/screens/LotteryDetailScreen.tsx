@@ -17,6 +17,17 @@ declare module '../services/predictionService' {
   }
 }
 
+/**
+ * Returns the appropriate CSS class for AI confidence based on thresholds
+ * @param confidence The confidence value as a percentage
+ * @returns CSS class name for the appropriate confidence level
+ */
+const getConfidenceColorClass = (confidence: number): string => {
+  if (confidence > 80) return 'text-green-500'; // High confidence
+  if (confidence >= 60) return 'text-yellow-500'; // Medium confidence
+  return 'text-red-500'; // Low confidence
+};
+
 const TabButton: React.FC<{
   active: boolean;
   label: string;
@@ -71,27 +82,17 @@ const ResultCard: React.FC<{
   const hasLargeNumberSet = numbersArray.length > 6;
   const hasVeryLargeNumberSet = numbersArray.length > 10;
   
+  // Verificar se há um número especial
+  const specialNumber = result.special_number ? parseInt(result.special_number.toString(), 10) : null;
+  
+  // Preparar o array de exibição para incluir o número especial no final se necessário
+  let displayNumbers = [...numbersArray];
+  if (specialNumber !== null && !hasLargeNumberSet) {
+    displayNumbers = [...numbersArray, specialNumber];
+  }
+  
   // Estado do resultado - usar o stateName passado como prop ou verificar state_code
   const displayStateName = stateName || (result.state_code ? result.state_code.toUpperCase() : undefined);
-  
-  // Randomly select balls to highlight (for games with many numbers)
-  // This ensures visual interest without highlighting too many
-  const getHighlightedIndices = () => {
-    if (!hasLargeNumberSet) return [];
-    
-    const indices = new Set<number>();
-    const maxHighlights = Math.min(3, Math.floor(numbersArray.length / 4));
-    
-    while (indices.size < maxHighlights) {
-      const randomIndex = Math.floor(Math.random() * numbersArray.length);
-      indices.add(randomIndex);
-    }
-    
-    return Array.from(indices);
-  };
-  
-  // Generate highlighted indices once when component renders
-  const [highlightedIndices] = useState(() => getHighlightedIndices());
   
   // Get the appropriate layout style based on number count
   const getLayoutStyle = () => {
@@ -158,21 +159,34 @@ const ResultCard: React.FC<{
                 <StyledLotteryBall 
                   number={num}
                   size={hasVeryLargeNumberSet ? "sm" : "md"}
-                  isHighlighted={highlightedIndices.includes(i)}
+                  isHighlighted={specialNumber === num}
                 />
               </div>
             ))
           ) : (
             // Use standard LotteryNumberBall for regular games
-            numbersArray.map((num, i) => (
-              <div key={i} className="flex justify-center transform transition-transform duration-300 hover:scale-110 hover:-translate-y-1">
-                <LotteryNumberBall 
-                  number={num} 
-                  isSpecial={i === numbersArray.length - 1 && numbersArray.length > 1}
-                  size="lg"
-                />
-              </div>
-            ))
+            displayNumbers
+              .slice(0, specialNumber !== null ? displayNumbers.length - 1 : displayNumbers.length)
+              .map((num, i) => (
+                <div key={i} className="flex justify-center transform transition-transform duration-300 hover:scale-110 hover:-translate-y-1">
+                  <LotteryNumberBall 
+                    number={num} 
+                    isSpecial={false}
+                    size="lg"
+                  />
+                </div>
+              ))
+          )}
+          
+          {/* Exibir o número especial por último, se existir e não for um jogo com muitos números */}
+          {specialNumber !== null && !hasLargeNumberSet && (
+            <div className="flex justify-center transform transition-transform duration-300 hover:scale-110 hover:-translate-y-1">
+              <LotteryNumberBall 
+                number={specialNumber} 
+                isSpecial={true}
+                size="lg"
+              />
+            </div>
           )}
         </div>
         
@@ -475,6 +489,14 @@ const SmartPicksTab: React.FC<{
           const specialNumberValue = prediction.predicted_special_number || prediction.special_number;
           const specialNumber = specialNumberValue ? parseInt(String(specialNumberValue), 10) : null;
           
+          // Adicionar o número especial no final do array se ele não for null
+          let displayNumbers = [...mainNumbers];
+          if (specialNumber !== null) {
+            // Adicionar o número especial no final se ele não estiver presente
+            // ou duplicá-lo se já estiver presente nos números regulares
+            displayNumbers = [...mainNumbers, specialNumber];
+          }
+          
           // Determinar a data de geração
           let generatedDate = 'Unknown date';
           
@@ -489,6 +511,8 @@ const SmartPicksTab: React.FC<{
               generatedDate = formatPredictionDate(timestamp);
             }
           }
+          
+          const confidence = Math.round(prediction.confidence);
           
           return (
             <Card key={prediction.id} variant="dark" className="overflow-hidden border border-gray-800 hover:border-accent/30 transition-all duration-300">
@@ -509,7 +533,13 @@ const SmartPicksTab: React.FC<{
                     </div>
                   </div>
                 </div>
-                <div className="bg-accent/20 text-accent text-xs font-medium px-3 py-1.5 rounded-full border border-accent/30 self-start sm:self-auto">
+                <div className={`text-xs font-medium px-3 py-1.5 rounded-full border self-start sm:self-auto
+                  ${confidence > 80 
+                    ? 'bg-green-500/20 text-green-500 border-green-500/30' 
+                    : confidence >= 60 
+                      ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' 
+                      : 'bg-red-500/20 text-red-500 border-red-500/30'
+                  }`}>
                   {Math.round(prediction.confidence)}% Confidence
                 </div>
               </div>
@@ -518,14 +548,27 @@ const SmartPicksTab: React.FC<{
               <div className="p-4">
                 {/* Números da predição */}
                 <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {mainNumbers.map((num, i) => (
+                  {/* Primeiro exibir números regulares (exceto o último quando há número especial) */}
+                  {displayNumbers
+                    .slice(0, specialNumber !== null ? displayNumbers.length - 1 : displayNumbers.length)
+                    .map((num, i) => (
+                      <SmartPickLotteryBall
+                        key={i}
+                        number={num}
+                        isSpecial={false}
+                        size="md"
+                      />
+                    ))}
+                  
+                  {/* Então exibir o número especial por último, se existir */}
+                  {specialNumber !== null && (
                     <SmartPickLotteryBall
-                      key={i}
-                      number={num}
-                      isSpecial={specialNumber !== null && num === specialNumber}
+                      key="special"
+                      number={specialNumber}
+                      isSpecial={true}
                       size="md"
                     />
-                  ))}
+                  )}
                 </div>
                 
                 {/* Análise de números */}
@@ -802,7 +845,7 @@ const LotteryDetailScreen: React.FC = () => {
                   <LotteryNumberBall 
                     key={i} 
                     number={num} 
-                    isSpecial={i === smartPickNumbers.length - 1}
+                    isSpecial={i === smartPickNumbers.length - 1 && smartPickNumbers.length > 1 && game?.results?.[0]?.special_number !== null}
                     size="lg"
                   />
                 ))}
