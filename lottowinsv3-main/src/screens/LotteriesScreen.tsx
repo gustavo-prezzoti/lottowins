@@ -211,7 +211,7 @@ const LotteriesScreen: React.FC = () => {
             
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
-                <h3 className="text-base font-bold text-white truncate">{game.name}</h3>
+                <h3 className="text-base font-bold text-white truncate max-w-[160px]">{game.name}</h3>
                 {isMultiStateGame(game) && (
                   <span className="inline-flex items-center text-xs font-semibold text-blue-200 bg-blue-900/20 px-1.5 py-0.5 rounded-full">
                     <Globe2 size={10} className="text-blue-300 mr-0.5" /> Multi
