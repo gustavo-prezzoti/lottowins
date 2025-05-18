@@ -275,10 +275,7 @@ const LotteriesScreen: React.FC = () => {
               <Button 
                 className="w-full py-1 text-xs mt-1" 
                 variant="primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/lottery/games/${game.id}`);
-                }}
+                onClick={() => navigate(`/lottery/games/${game.id}`)}
               >
                 View Details
               </Button>
