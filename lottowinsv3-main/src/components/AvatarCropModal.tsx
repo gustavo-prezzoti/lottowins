@@ -87,15 +87,15 @@ const AvatarCropModal: React.FC<AvatarCropModalProps> = ({ open, onClose, onCrop
   if (isMobile) {
     // MOBILE: fullscreen, barra topo fixa, cropper ocupa 65vh, preview maior, botões fixos embaixo
     return (
-      <div className="fixed inset-0 z-50 bg-white flex flex-col">
+      <div className="fixed inset-0 z-[1000] bg-white flex flex-col">
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white sticky top-0 z-10">
           <h2 className="text-base font-bold">Edit Profile Photo</h2>
           <button className="text-gray-500 text-2xl leading-none" onClick={onClose}>&times;</button>
         </div>
         {/* Cropper */}
-        <div className="flex-1 flex flex-col items-center justify-center px-2">
-          <div className="relative w-full" style={{ height: '65vh', maxHeight: 400 }}>
+        <div className="flex-1 flex flex-col items-center justify-center px-2 overflow-y-auto">
+          <div className="relative w-full" style={{ height: '50vh', maxHeight: 350 }}>
             <Cropper
               ref={cropperRef}
               image={imageSrc}
@@ -120,32 +120,32 @@ const AvatarCropModal: React.FC<AvatarCropModalProps> = ({ open, onClose, onCrop
             step={0.01}
             value={zoom}
             onChange={e => setZoom(Number(e.target.value))}
-            className="w-full my-4"
+            className="w-full my-3"
           />
           <div
             className="mx-auto mb-2 flex items-center justify-center border-2 border-accent/40 bg-gray-100"
             style={{
-              width: '32vw',
-              height: '32vw',
-              minWidth: 96,
-              minHeight: 96,
-              maxWidth: 160,
-              maxHeight: 160,
+              width: '25vw',
+              height: '25vw',
+              minWidth: 80,
+              minHeight: 80,
+              maxWidth: 120,
+              maxHeight: 120,
               borderRadius: '9999px',
             }}
           >
             {preview ? (
               <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-full" />
             ) : (
-              <span className="text-text-muted">Preview</span>
+              <span className="text-text-muted text-xs">Preview</span>
             )}
           </div>
         </div>
         {/* Bottom bar */}
         {errorMsg && <div className="text-red-500 text-sm mb-2 text-center">{errorMsg}</div>}
-        <div className="flex gap-3 w-full px-4 py-4 bg-white border-t border-gray-200 sticky bottom-0 z-10">
-          <Button variant="outline" className="flex-1 py-3 text-base" onClick={onClose} disabled={loading}>Cancel</Button>
-          <Button className="flex-1 py-3 text-base" onClick={handleCrop} disabled={loading}>{loading ? 'Saving...' : 'Save'}</Button>
+        <div className="flex gap-3 w-full px-4 py-3 bg-white border-t border-gray-200 sticky bottom-0 z-10">
+          <Button variant="outline" className="flex-1 py-2 text-sm" onClick={onClose} disabled={loading}>Cancel</Button>
+          <Button className="flex-1 py-2 text-sm" onClick={handleCrop} disabled={loading}>{loading ? 'Saving...' : 'Save'}</Button>
         </div>
       </div>
     );
@@ -153,7 +153,7 @@ const AvatarCropModal: React.FC<AvatarCropModalProps> = ({ open, onClose, onCrop
 
   // DESKTOP: mantém layout atual, preview rounded-full
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60">
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-2xl mx-2">
         <button className="absolute top-3 right-3 text-gray-500 hover:text-accent z-10" onClick={onClose}>&times;</button>
         <h2 className="text-lg font-bold mb-4 text-center">Edit Profile Photo</h2>

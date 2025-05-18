@@ -191,17 +191,8 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
           const specialNum = parseInt(response.prediction.special_number, 10);
           setSpecialNumber(specialNum);
           
-          // Important: Include the special number in the numbers array
-          // Instead of filtering it out, include all regular numbers first
-          const allNumbers = [...regularNumbers];
-          
-          // Make sure the special number isn't already in the array
-          if (!allNumbers.includes(specialNum)) {
-            allNumbers.push(specialNum);
-          }
-          
-          // Sort the regular numbers but ensure special number is last
-          const sortedRegularNumbers = regularNumbers.sort((a, b) => a - b);
+          // Sort the regular numbers (without removing the special number)
+          const sortedRegularNumbers = [...regularNumbers].sort((a, b) => a - b);
           
           // Final array with sorted regular numbers and special number at the end
           const finalNumbers = [...sortedRegularNumbers, specialNum];
