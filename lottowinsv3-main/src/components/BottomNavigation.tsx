@@ -23,7 +23,7 @@ const BottomNavigation: React.FC = () => {
   };
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-16 bg-primary border-t border-white/10 flex justify-around items-center px-2 backdrop-blur-lg bg-opacity-95">
+    <div className="fixed bottom-0 left-0 right-0 h-16 bg-primary border-t border-white/10 flex justify-around items-center px-2 backdrop-blur-lg bg-opacity-95 z-[999]">
       <NavItem 
         to="/" 
         icon={<Home size={24} />} 
