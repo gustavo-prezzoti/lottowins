@@ -3,17 +3,16 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { useAuth } from '../contexts/AuthContext';
+import { ensureHttps } from '../utils/url';
 
 interface AppHeaderProps {
   title: string;
   showBackButton?: boolean;
-  rightElement?: React.ReactNode;
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   title,
   showBackButton = false,
-  rightElement,
 }) => {
   const navigate = useNavigate();
   const { isMobile } = useWindowSize();
@@ -46,32 +45,28 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             />
           </div>
           
-          {rightElement ? (
-            <div>{rightElement}</div>
-          ) : (
-            <button className="flex items-center gap-3 group cursor-pointer" type="button" onClick={() => navigate('/profile')}>
-              <div className="w-10 h-10 rounded-full bg-accent/20 overflow-hidden flex items-center justify-center text-white group-hover:ring-2 group-hover:ring-accent transition">
-                {user?.profile_photo ? (
-                  <img
-                    src={user.profile_photo}
-                    alt={user.name}
-                    onError={e => {
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) parent.innerHTML = user?.name?.substring(0, 2).toUpperCase() || 'U';
-                    }}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span>{user?.name?.substring(0, 2).toUpperCase() || 'U'}</span>
-                )}
-              </div>
-              <div className="hidden md:block text-left">
-                <p className="text-white text-sm font-medium">{user?.name || 'User'}</p>
-                <p className="text-text-muted text-xs">Account</p>
-              </div>
-            </button>
-          )}
+          <button className="flex items-center gap-3 group cursor-pointer" type="button" onClick={() => navigate('/profile')}>
+            <div className="w-10 h-10 rounded-full bg-accent/20 overflow-hidden flex items-center justify-center text-white group-hover:ring-2 group-hover:ring-accent transition">
+              {user?.profile_photo ? (
+                <img
+                  src={ensureHttps(user.profile_photo) ?? ''}
+                  alt={user.name}
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) parent.innerHTML = user?.name?.substring(0, 2).toUpperCase() || 'U';
+                  }}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{user?.name?.substring(0, 2).toUpperCase() || 'U'}</span>
+              )}
+            </div>
+            <div className="hidden md:block text-left">
+              <p className="text-white text-sm font-medium">{user?.name || 'User'}</p>
+              <p className="text-text-muted text-xs">Account</p>
+            </div>
+          </button>
         </div>
       </div>
     </header>

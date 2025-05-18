@@ -12,13 +12,19 @@ import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import { useToast } from '../components/Toast';
 
+// Função para garantir que URLs de imagem usem HTTPS
+function ensureHttps(url: string | null): string | null {
+  if (!url) return null;
+  return url.replace(/^http:\/\//i, 'https://');
+}
+
 const ProfileScreen: React.FC = () => {
   const { isMobile } = useWindowSize();
   const { user, logout, setUser } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
   
-  const [avatar, setAvatar] = useState<string | null>(user?.profile_photo || null);
+  const [avatar, setAvatar] = useState<string | null>(user?.profile_photo ? ensureHttps(user.profile_photo) : null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   // Estado de nome e email editáveis
@@ -39,7 +45,7 @@ const ProfileScreen: React.FC = () => {
     if (user) {
       setName(user.name);
       setEmail(user.email);
-      setAvatar(user.profile_photo || null);
+      setAvatar(user.profile_photo ? ensureHttps(user.profile_photo) : null);
     }
   }, [user]);
 
@@ -59,7 +65,7 @@ const ProfileScreen: React.FC = () => {
     setPhotoError(null);
     try {
       const updatedUser = await authService.updateProfilePhoto(croppedImg);
-      setAvatar(updatedUser.profile_photo || croppedImg);
+      setAvatar(updatedUser.profile_photo ? ensureHttps(updatedUser.profile_photo) : null);
       setUser(updatedUser);
       setCropModalOpen(false);
       setImageToCrop(null);

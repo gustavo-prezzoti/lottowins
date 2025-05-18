@@ -41,9 +41,20 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({ name, image, onFileSelected
     >
       {image ? (
         <img
-          src={image}
+          src={image ?? ''}
           alt={name}
           className="w-full h-full rounded-full object-cover border-4 border-accent/30 shadow-lg"
+          onError={e => {
+            e.currentTarget.style.display = 'none';
+            
+            const parent = e.currentTarget.parentElement;
+            if (parent && !parent.querySelector('.avatar-initials')) {
+              const initialsEl = document.createElement('div');
+              initialsEl.className = 'avatar-initials w-full h-full rounded-full flex items-center justify-center bg-red-600/70 text-white text-3xl font-bold absolute top-0 left-0';
+              initialsEl.textContent = getInitials(name);
+              parent.appendChild(initialsEl);
+            }
+          }}
         />
       ) : (
         <div
