@@ -159,7 +159,7 @@ const ResultCard: React.FC<{
                 <StyledLotteryBall 
                   number={num}
                   size={hasVeryLargeNumberSet ? "sm" : "md"}
-                  isHighlighted={specialNumber === num}
+                  isHighlighted={specialNumber !== null && num === specialNumber}
                 />
               </div>
             ))

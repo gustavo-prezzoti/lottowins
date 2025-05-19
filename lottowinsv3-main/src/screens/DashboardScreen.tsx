@@ -348,11 +348,11 @@ const DashboardScreen: React.FC = () => {
             
             <Button 
               variant="secondary"
-              className="h-24 flex flex-col items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
+              className="h-24 flex flex-col items-center justify-center gap-2 hover:scale-[1.02] transition-transform col-span-2"
               onClick={() => navigate('/results')}
             >
               <Search size={22} />
-              <span className="font-medium text-sm">Results</span>
+              <span className="font-medium text-sm">Check Results</span>
             </Button>
             
             <Button 
