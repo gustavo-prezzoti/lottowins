@@ -80,12 +80,21 @@ const DashboardScreen: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <Button 
-                className="w-full"
-                onClick={() => navigate('/smart-pick')}
-              >
-                Generate Smart Pick
-              </Button>
+              <div className="flex flex-col gap-2 w-full">
+                <Button 
+                  className="w-full"
+                  onClick={() => navigate('/smart-pick')}
+                >
+                  Generate Smart Pick
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate('/results')}
+                >
+                  Check Results
+                </Button>
+              </div>
             </div>
           </Card>
         </section>
@@ -336,10 +345,10 @@ const DashboardScreen: React.FC = () => {
         <section className="mb-6">
           <h2 className="text-text font-semibold text-xl mb-4">Quick Access</h2>
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <Button 
               variant="secondary"
-              className="h-24 flex flex-col items-center justify-center gap-2 hover:scale-[1.02] transition-transform col-span-2"
+              className="h-24 flex flex-col items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
               onClick={() => navigate('/smart-pick')}
             >
               <Sparkles size={22} />
@@ -348,7 +357,7 @@ const DashboardScreen: React.FC = () => {
             
             <Button 
               variant="secondary"
-              className="h-24 flex flex-col items-center justify-center gap-2 hover:scale-[1.02] transition-transform col-span-2"
+              className="h-24 flex flex-col items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
               onClick={() => navigate('/results')}
             >
               <Search size={22} />
