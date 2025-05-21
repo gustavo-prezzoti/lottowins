@@ -6,7 +6,7 @@ import AvatarCropModal from '../components/AvatarCropModal';
 import EditProfileModal from '../components/EditProfileModal';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 import { useWindowSize } from '../hooks/useWindowSize';
-import { LogOut, Trash2, User, Mail, Lock } from 'lucide-react';
+import { LogOut, Trash2, User, Mail, Lock, HelpCircle, MessageCircle, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
@@ -118,7 +118,7 @@ const ProfileScreen: React.FC = () => {
   // Mobile Layout
   const MobileProfile = () => (
     <div className="min-h-screen bg-primary">
-      <main className="px-4 py-4">
+      <main className="px-4 py-4 pb-24">
         <Card className="flex flex-col items-center p-6 mb-6">
           <div className="mb-3">
             <AvatarUpload
@@ -137,6 +137,32 @@ const ProfileScreen: React.FC = () => {
           <h3 className="text-text-muted text-xs md:text-sm font-semibold mb-2 uppercase tracking-wider text-center">Account Actions</h3>
           <Button variant="outline" className="w-full max-w-xs py-2 text-xs md:text-sm flex items-center justify-center gap-2 mb-2" onClick={handleLogout}><LogOut size={15} />Logout</Button>
           <Button variant="secondary" className="w-full max-w-xs py-2 text-xs md:text-sm flex items-center justify-center gap-2"><Trash2 size={15} />Delete Account</Button>
+        </Card>
+        <Card className="p-6 mb-6 flex flex-col items-center bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200">
+          <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mb-3 shadow-inner">
+            <HelpCircle size={24} className="text-primary-600" />
+          </div>
+          <h3 className="text-text-dark text-sm md:text-base font-bold mb-3 uppercase tracking-wider text-center">We're Here For You</h3>
+          <div className="text-sm text-center">
+            <p className="mb-3 font-medium">You can count on us whenever you need.</p>
+            <p className="mb-4 text-text-muted">We're here to make sure your experience with the app is as smooth, fast, and hassle-free as possible.</p>
+            
+            <div className="flex flex-col items-center justify-center mb-3">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <MessageCircle size={18} className="text-primary-600 flex-shrink-0" />
+                <p className="font-medium">If you have any questions or run into any issues:</p>
+              </div>
+              <a href="mailto:lottowins.ai@gmail.com" className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 rounded-lg font-medium hover:bg-gray-900 transition-colors mb-4 shadow-md w-full max-w-xs">
+                <Mail size={16} className="flex-shrink-0 text-white" />
+                <span className="text-white">lottowins.ai@gmail.com</span>
+              </a>
+            </div>
+            
+            <div className="flex items-center justify-center gap-2 text-text-muted">
+              <Clock size={16} className="flex-shrink-0" />
+              <p>Our team responds quickly and gives every message the attention it deserves.</p>
+            </div>
+          </div>
         </Card>
         <AvatarCropModal
           open={cropModalOpen && !!imageToCrop}
@@ -195,6 +221,32 @@ const ProfileScreen: React.FC = () => {
               <div className="grid grid-cols-2 gap-3 w-full max-w-md">
                 <Button variant="outline" className="w-full py-2 text-xs md:text-sm flex items-center justify-center gap-2" onClick={handleLogout}><LogOut size={15} />Logout</Button>
                 <Button variant="secondary" className="w-full py-2 text-xs md:text-sm flex items-center justify-center gap-2"><Trash2 size={15} />Delete Account</Button>
+              </div>
+            </Card>
+            <Card className="p-10 flex flex-col items-center gap-4 shadow-lg rounded-2xl mb-10 bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200">
+              <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mb-2 shadow-inner">
+                <HelpCircle size={32} className="text-primary-600" />
+              </div>
+              <h3 className="text-text-dark text-base font-bold mb-2 uppercase tracking-wider text-center">We're Here For You</h3>
+              <div className="text-center max-w-lg">
+                <p className="mb-3 font-medium text-lg">You can count on us whenever you need.</p>
+                <p className="mb-6 text-text-muted">We're here to make sure your experience with the app is as smooth, fast, and hassle-free as possible.</p>
+                
+                <div className="flex flex-col items-center justify-center mb-3">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <MessageCircle size={20} className="text-primary-600 flex-shrink-0" />
+                    <p className="font-medium">If you have any questions or run into any issues:</p>
+                  </div>
+                  <a href="mailto:lottowins.ai@gmail.com" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-800 rounded-lg font-medium hover:bg-gray-900 transition-colors mb-6 shadow-md w-full max-w-sm">
+                    <Mail size={18} className="flex-shrink-0 text-white" />
+                    <span className="text-white">lottowins.ai@gmail.com</span>
+                  </a>
+                </div>
+                
+                <div className="flex items-center justify-center gap-2 text-text-muted">
+                  <Clock size={18} className="flex-shrink-0" />
+                  <p>Our team responds quickly and gives every message the attention it deserves.</p>
+                </div>
               </div>
             </Card>
             <AvatarCropModal

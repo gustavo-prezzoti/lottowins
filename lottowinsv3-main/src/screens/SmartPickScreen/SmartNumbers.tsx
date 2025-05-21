@@ -349,7 +349,7 @@ const SmartNumbers: React.FC<SmartNumbersProps> = ({
           <Brain size={isMobile ? 48 : 64} className="text-gray-400 mb-4" />
           <h3 className="text-text font-semibold text-xl mb-2">Select a Lottery Game</h3>
           <p className="text-text-muted max-w-md">
-            Choose a lottery game from the list to generate smart picks based on AI analysis.
+              Choose a game to view number suggestions inspired by previous draws.
           </p>
         </div>
       </Card>
