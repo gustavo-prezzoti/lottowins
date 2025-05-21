@@ -6,7 +6,7 @@ import AvatarCropModal from '../components/AvatarCropModal';
 import EditProfileModal from '../components/EditProfileModal';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 import { useWindowSize } from '../hooks/useWindowSize';
-import { LogOut, Trash2, User, Mail, Lock, HelpCircle, MessageCircle, Clock } from 'lucide-react';
+import { LogOut, Trash2, User, Mail, Lock, HelpCircle, MessageCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
@@ -159,7 +159,6 @@ const ProfileScreen: React.FC = () => {
             </div>
             
             <div className="flex items-center justify-center gap-2 text-text-muted">
-              <Clock size={16} className="flex-shrink-0" />
               <p>Our team responds quickly and gives every message the attention it deserves.</p>
             </div>
           </div>
@@ -244,7 +243,6 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-center gap-2 text-text-muted">
-                  <Clock size={18} className="flex-shrink-0" />
                   <p>Our team responds quickly and gives every message the attention it deserves.</p>
                 </div>
               </div>
